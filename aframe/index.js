@@ -28,11 +28,11 @@ export function SuspiciousIsland() {
 	if (DEBUG_MODE) redirectConsoleOutputForAFrame();
 	registerComponentDesktopMouseDrag();
 
-	// load items
+	// load
 	const preloadAssets = document.createElement("div");
 	preloadAssets.id = "assets-temp";
 
-	getModelFilesFromFolder("@/aframe/assets/models/").forEach(model => {
+	getModelFilesFromFolder().forEach(model => {
 		const assetItem = document.createElement("a-asset-item");
 		assetItem.setAttribute("id", model.id.replace("#", ""));
 		assetItem.setAttribute("src", model.src);
@@ -89,7 +89,7 @@ export function SuspiciousIsland() {
 				</a-entity>
 
 				<!-- TODO: load environment -->
-				
+				<a-entity gltf-model="#npc-einstein"></a-entity>
 
 				<!-- NOTE: temporary -->
 				<a-box width="10" height="0.06" depth="10" visible="false" material="src: #nav-mesh-texture" nav-mesh></a-box>
