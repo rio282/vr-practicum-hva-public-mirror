@@ -89,11 +89,13 @@ export function SuspiciousIsland() {
 				</a-entity>
 
 				<!-- TODO: load environment -->
+				<a-entity gltf-model="#environment-temple" position="0 0 -25"></a-entity>
+				<a-entity gltf-model="#environment-island" scale="50 50 50"></a-entity>
 				<a-entity gltf-model="#npc-einstein"></a-entity>
 
 				<!-- NOTE: temporary -->
-				<a-box width="10" height="0.06" depth="10" visible="false" material="src: #nav-mesh-texture" nav-mesh></a-box>
-				<a-box id="floor" width="10" height="0.05" depth="10"></a-box>
+<!--				<a-box width="10" height="0.06" depth="10" visible="false" material="src: #nav-mesh-texture" nav-mesh></a-box>-->
+<!--				<a-box id="floor" width="10" height="0.05" depth="10"></a-box>-->
 
 				<a-sky color="#87CEEB"></a-sky>
 		</a-scene>
