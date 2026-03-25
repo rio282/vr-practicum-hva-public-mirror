@@ -1,4 +1,6 @@
 // aframe
+import {MapGenerator} from "./core/generators/map-generator";
+
 require("aframe");
 
 /**
@@ -13,6 +15,9 @@ delete AFRAME.components["grabbable"];
 require("aframe-extras");
 require("@c-frame/aframe-physics-system");
 require("super-hands");
+
+require("@/aframe/core/components/hostile-entity.js");
+require("@/aframe/core/generators/map-generator.js");
 
 import {DEBUG_MODE} from "@/aframe/settings.js";
 import {redirectConsoleOutputForAFrame} from "@/aframe/core/utils/redirect-console-output.js";
@@ -88,14 +93,9 @@ export function SuspiciousIsland() {
 
 				</a-entity>
 
-				<!-- TODO: load environment -->
 				<a-entity gltf-model="#environment-temple" position="0 0 -25"></a-entity>
 				<a-entity gltf-model="#environment-island" scale="50 50 50"></a-entity>
-				<a-entity gltf-model="#npc-einstein"></a-entity>
-
-				<!-- NOTE: temporary -->
-<!--				<a-box width="10" height="0.06" depth="10" visible="false" material="src: #nav-mesh-texture" nav-mesh></a-box>-->
-<!--				<a-box id="floor" width="10" height="0.05" depth="10"></a-box>-->
+<!--				<a-entity gltf-model="#navigation-island-navmesh" scale="50 50 50" nav-mesh visible="false"></a-entity>-->
 
 				<a-sky color="#87CEEB"></a-sky>
 		</a-scene>
@@ -103,6 +103,11 @@ export function SuspiciousIsland() {
 
 	// cleanup
 	preloadAssets.remove();
+
+	// spawn pizzas
+	const nm = view.querySelector("[gltf-model='#environment-island']");
+	// const nm = view.querySelector("[gltf-model='#navigation-island-navmesh']");
+	nm.addEventListener("model-loaded", () => new MapGenerator(nm).generate());
 
 	// NOTE: leave this at the end
 	view.querySelector("a-scene").addEventListener("loaded", _ => addCustomDevTools());
