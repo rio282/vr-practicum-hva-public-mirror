@@ -17,7 +17,7 @@ export class MapGenerator {
 	 * @param collectiblesAmount
 	 * @param hostilesAmount
 	 */
-	constructor(mesh, collectiblesAmount = 3, hostilesAmount = 1) {
+	constructor(mesh, collectiblesAmount = 3, hostilesAmount = 2) {
 		this.#mesh = mesh;
 		this.#collectiblesAmount = collectiblesAmount;
 		this.#hostilesAmount = hostilesAmount;
@@ -97,25 +97,27 @@ export class MapGenerator {
 	generate() {
 		// collectibles
 		for (let i = 0; i < this.#collectiblesAmount; i++) {
-			const {x, z} = this.#getRandomPoint();
+			const {x, y, z} = this.#getRandomPoint();
 
 			const collectible = document.createElement("a-entity");
 			collectible.setAttribute("gltf-model", "#item-pizza");
-			collectible.setAttribute("position", `${x} 1 ${z}`);
+			collectible.setAttribute("position", `${x} ${y + 0.5} ${z}`);
 			collectible.setAttribute("scale", "0.225 0.225 0.225");
+			collectible.setAttribute("static-body", "shape: box;");
+			collectible.classList.add("grabbable");
 
 			this.#_scene.appendChild(collectible);
 		}
 
 		// hostiles
 		for (let i = 0; i < this.#hostilesAmount; i++) {
-			const {x, z} = this.#getRandomPoint();
+			const {x, y, z} = this.#getRandomPoint();
 
 			const hostileEntity = document.createElement("a-entity");
 			hostileEntity.setAttribute("gltf-model", "#npc-einstein");
-			hostileEntity.setAttribute("position", `${x} 1 ${z}`);
+			hostileEntity.setAttribute("position", `${x} ${y + 0.5} ${z}`);
 			hostileEntity.setAttribute("hostile-entity", "");
-			hostileEntity.setAttribute("nav-agent", "speed: 1.5;");
+			hostileEntity.setAttribute("nav-agent", "speed: 2;");
 
 			this.#_scene.appendChild(hostileEntity);
 		}

@@ -16,14 +16,18 @@ require("aframe-extras");
 require("@c-frame/aframe-physics-system");
 require("super-hands");
 
+// components
 require("@/aframe/core/components/hostile-entity.js");
-require("@/aframe/core/generators/map-generator.js");
+require("@/aframe/core/components/sacrificial-place.js");
 
+// utils
 import {DEBUG_MODE} from "@/aframe/settings.js";
 import {redirectConsoleOutputForAFrame} from "@/aframe/core/utils/redirect-console-output.js";
 import {addCustomDevTools} from "@/aframe/core/utils/dev-tools.js";
 import {getModelFilesFromFolder} from "@/aframe/core/utils/path-utils.js";
-import {registerComponentDesktopMouseDrag} from "@/aframe/core/mechanics/mouse-drag.js";
+
+// managers
+import {GameStateManager} from "@/aframe/core/managers/gamestate-manager.js";
 
 /**
  * Main function to create the environment
@@ -31,7 +35,6 @@ import {registerComponentDesktopMouseDrag} from "@/aframe/core/mechanics/mouse-d
  */
 export function SuspiciousIsland() {
 	if (DEBUG_MODE) redirectConsoleOutputForAFrame();
-	registerComponentDesktopMouseDrag();
 
 	// load
 	const preloadAssets = document.createElement("div");
@@ -93,9 +96,19 @@ export function SuspiciousIsland() {
 
 				</a-entity>
 
-				<a-entity gltf-model="#environment-temple" position="0 0 -25"></a-entity>
-				<a-entity gltf-model="#environment-island" scale="50 50 50"></a-entity>
-<!--				<a-entity gltf-model="#navigation-island-navmesh" scale="50 50 50" nav-mesh visible="false"></a-entity>-->
+				<a-entity gltf-model="#environment-temple" position="45 -6 -150"></a-entity>
+				<a-box sacrificial-place width="10" height="1" depth="9" position="45 -6 -150" visible="false"></a-box>
+
+				<a-entity
+					gltf-model="#environment-island"
+					position="0 -8 0">
+				</a-entity>
+				<a-entity
+					gltf-model="#navigation-island-navmesh"
+					position="0 -8 0"
+					nav-mesh
+					visible="false">
+				</a-entity>
 
 				<a-sky color="#87CEEB"></a-sky>
 		</a-scene>
@@ -104,11 +117,11 @@ export function SuspiciousIsland() {
 	// cleanup
 	preloadAssets.remove();
 
-	// spawn pizzas
-	const nm = view.querySelector("[gltf-model='#environment-island']");
-	// const nm = view.querySelector("[gltf-model='#navigation-island-navmesh']");
-	nm.addEventListener("model-loaded", () => new MapGenerator(nm).generate());
+	// start
+	const scene = view.querySelector("a-scene");
+	const manager = new GameStateManager(scene);
+	manager.start();
 
 	// NOTE: leave this at the end
-	view.querySelector("a-scene").addEventListener("loaded", _ => addCustomDevTools());
+	scene.addEventListener("loaded", _ => addCustomDevTools());
 }
