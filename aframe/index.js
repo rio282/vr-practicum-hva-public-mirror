@@ -52,6 +52,7 @@ export function SuspiciousIsland() {
 	view.innerHTML = `
 		<a-scene ${DEBUG_MODE ? "stats" : ""}
 			physics="gravity: -9.8; debug: ${DEBUG_MODE.toString()};"
+			fog="type: exponential; color: #050505; density: 0.09"
 			loading-screen="dotsColor: red; backgroundColor: black;">
 				<a-assets>
 					<!-- textures -->
@@ -77,6 +78,14 @@ export function SuspiciousIsland() {
 									cursor="rayOrigin: mouse"
 									raycaster="objects: .grabbable">
 								</a-entity>
+
+								<!-- Light Source -->
+								<a-entity
+									id="playerLight"
+									light="type: spot; color: #ffffff; intensity: 2.0; angle: 45; distance: 60; decay: 1.5; penumbra: 0.1;"
+									position="0 0 -0.2"
+									light-jitter>
+								</a-entity>
 						</a-entity>
 
 						<!-- VR users -->
@@ -96,21 +105,17 @@ export function SuspiciousIsland() {
 
 				</a-entity>
 
-				<a-entity gltf-model="#environment-temple" position="45 -6 -150"></a-entity>
+				<a-entity gltf-model="#environment-temple" position="40 -2 -110"></a-entity>
 				<a-box sacrificial-place width="10" height="1" depth="9" position="45 -6 -150" visible="false"></a-box>
 
 				<a-entity
-					gltf-model="#environment-island"
-					position="0 -8 0">
-				</a-entity>
-				<a-entity
-					gltf-model="#navigation-island-navmesh"
-					position="0 -8 0"
-					nav-mesh
-					visible="false">
+					gltf-model="#environment-forest"
+					position="0 5 0"
+					scale="40 40 40">
 				</a-entity>
 
-				<a-sky color="#87CEEB"></a-sky>
+				<a-sky color="#0a0a0f"></a-sky>
+				<a-light type="ambient" color="#222233" intensity="0.8"></a-light>
 		</a-scene>
 	`;
 
@@ -120,8 +125,16 @@ export function SuspiciousIsland() {
 	// start
 	const scene = view.querySelector("a-scene");
 	const manager = new GameStateManager(scene);
-	manager.start();
+	// manager.start();
 
 	// NOTE: leave this at the end
 	scene.addEventListener("loaded", _ => addCustomDevTools());
 }
+
+
+AFRAME.registerComponent("light-jitter", {
+	tick: function (time) {
+		this.el.object3D.rotation.x += (Math.random() - 0.5) * 0.005;
+		this.el.object3D.rotation.y += (Math.random() - 0.5) * 0.005;
+	}
+});

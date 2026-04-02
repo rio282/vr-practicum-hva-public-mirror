@@ -117,7 +117,7 @@ export class MapGenerator {
 			hostileEntity.setAttribute("gltf-model", "#npc-einstein");
 			hostileEntity.setAttribute("position", `${x} ${y + 0.5} ${z}`);
 			hostileEntity.setAttribute("hostile-entity", "");
-			hostileEntity.setAttribute("nav-agent", "speed: 2;");
+			hostileEntity.setAttribute("nav-agent", "speed: 10;");
 
 			this.#_scene.appendChild(hostileEntity);
 		}
