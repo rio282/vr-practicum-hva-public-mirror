@@ -15,7 +15,7 @@ export class GameStateManager {
 
 	constructor(scene) {
 		this.#scene = scene;
-		scene.addEventListener(STATE.GAME_OVER, this.#onGameOver);
+		scene.addEventListener(STATE.GAME_OVER, () => this.#onGameOver());
 	}
 
 	start() {
