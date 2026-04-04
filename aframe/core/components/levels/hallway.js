@@ -1,4 +1,6 @@
 import {isPlayerNearby} from "@/aframe/core/utils/player-detection.js";
+import swipe from "bootstrap/js/src/util/swipe";
+import {LEVELS} from "../../managers/gamestate-manager";
 
 AFRAME.registerComponent("hallway", {
 	init() {
@@ -19,7 +21,7 @@ AFRAME.registerComponent("hallway", {
 				depth="5"
 				geometry="primitive: box"
 				material="color: red;"
-				data-level="bedroom"
+				data-level="${LEVELS.BEDROOM}"
 				class="level-trigger">
 			</a-box>
 
@@ -29,7 +31,7 @@ AFRAME.registerComponent("hallway", {
 				height="0.05"
 				depth="5"
 				material="color: blue;"
-				data-level="kitchen"
+				data-level="${LEVELS.KITCHEN}"
 				class="level-trigger">
 			</a-box>
 		`;
@@ -49,7 +51,20 @@ AFRAME.registerComponent("hallway", {
 	},
 
 	onChangeLevel(level) {
-		this.el.sceneEl.emit("change-level", {level});
+		let playerStartingPosition = {x: 0, y: 0, z: 0};
+		switch (level) {
+			case LEVELS.BEDROOM:
+				playerStartingPosition.x = -10;
+				playerStartingPosition.z = -7;
+				break;
+			default:
+				break;
+		}
+
+		this.el.sceneEl.emit("change-level", {
+			level,
+			playerStartingPosition
+		});
 	},
 
 	remove() {

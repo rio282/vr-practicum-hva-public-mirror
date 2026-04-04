@@ -31,7 +31,10 @@ export class GameStateManager {
 		this.#scene = scene;
 		this.#currentLevel = startingLevel;
 
-		this.#scene.addEventListener("change-level", (e) => this.changeLevel(e.detail.level));
+		this.#scene.addEventListener("change-level", (e) => this.changeLevel(
+			e.detail.level,
+			e.detail.playerStartingPosition ?? {x: 0, y: 0, z: 0}
+		));
 		this.#scene.addEventListener("game-over", () => this.setState(STATE.GAME_OVER));
 		this.#scene.addEventListener("game-won", () => this.setState(STATE.GAME_WON));
 		this.#scene.addEventListener("start-cutscene", () => this.setState(STATE.IN_CUTSCENE));
@@ -52,9 +55,9 @@ export class GameStateManager {
 		return this.#currentLevel;
 	}
 
-	async changeLevel(newLevel) {
+	async changeLevel(newLevel, playerStartingPosition = {x: 0, y: 0, z: 0}) {
 		if (newLevel === this.#currentLevel) return;
-		await this.loadLevel(newLevel);
+		await this.loadLevel(newLevel, playerStartingPosition);
 	}
 
 	setState(newState) {
@@ -103,7 +106,7 @@ export class GameStateManager {
 		}
 	}
 
-	async loadLevel(level) {
+	async loadLevel(level, playerStartingPosition = {x: 0, y: 0, z: 0}) {
 		console.debug(`Loading level: ${level}`);
 		const levelRoot = this.#getOrCreateLevelRoot();
 
@@ -113,11 +116,12 @@ export class GameStateManager {
 		this.#currentLevel = level;
 		levelRoot.setAttribute(level, "");
 
+		// aframe gotta realise we're doing allat yk...
 		await new Promise(resolve => setTimeout(resolve, 0));
-		this.#scene.emit("level-loaded", { level });
+		this.#scene.emit("level-loaded", {level});
 
 		// reset player position
-		this.#scene.querySelector("#player").setAttribute("position", "0 0 0");
+		this.#scene.querySelector("#player").setAttribute("position", `${playerStartingPosition.x} ${playerStartingPosition.y} ${playerStartingPosition.z}`);
 	}
 
 	#getOrCreateLevelRoot() {
