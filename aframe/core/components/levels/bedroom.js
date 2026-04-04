@@ -5,8 +5,8 @@ AFRAME.registerComponent("bedroom", {
 		this.container.innerHTML = `
 			<a-entity
 				gltf-model="#environment-bedroom"
-				scale="0.1 0.1 0.1"
-				position="0 -2 0"
+				scale="7 7 7"
+				position="0 6 0"
 			></a-entity>
 		`;
 

@@ -15,6 +15,14 @@ AFRAME.registerComponent("hallway", {
 				data-level="bedroom"
 				class="level-trigger">
 			</a-entity>
+
+			<a-entity
+				position="3 1 -5"
+				geometry="primitive: box"
+				material="color: blue"
+				data-level="kitchen"
+				class="level-trigger">
+			</a-entity>
 		`;
 
 		this.container

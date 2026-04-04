@@ -20,6 +20,7 @@ require("@/aframe/core/components/light-jitter.js");
 // import levels
 require("@/aframe/core/components/levels/hallway.js");
 require("@/aframe/core/components/levels/bedroom.js");
+require("@/aframe/core/components/levels/kitchen.js");
 
 
 // utils

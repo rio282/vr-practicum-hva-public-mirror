@@ -129,47 +129,6 @@ export class GameStateManager {
 		return root;
 	}
 
-	#unloadCurrentLevel() {
-		const existing = this.#scene.querySelectorAll("[data-level]");
-		existing.forEach(el => el.remove());
-	}
-
-	async #spawnLevelEntities(level) {
-		const container = document.createElement("a-entity");
-		container.setAttribute("data-level", level);
-
-		switch (level) {
-			case LEVELS.HALLWAY:
-				container.innerHTML = `
-					<a-box position="0 1 -3" color="#4CC3D9"></a-box>
-				`;
-				break;
-
-			case LEVELS.BEDROOM:
-				container.innerHTML = `
-					<a-sphere position="0 1.25 -3" radius="1.25" color="#EF2D5E"></a-sphere>
-				`;
-				break;
-
-			case LEVELS.KITCHEN:
-				container.innerHTML = `
-					<a-cylinder position="0 0.75 -3" radius="0.5" height="1.5" color="#FFC65D"></a-cylinder>
-				`;
-				break;
-
-			case LEVELS.THE_OUTSIDE:
-				container.innerHTML = `
-					<a-plane rotation="-90 0 0" width="20" height="20" color="#7BC8A4"></a-plane>
-				`;
-				break;
-		}
-
-		this.#scene.appendChild(container);
-
-		// ensure aframe parses it
-		await new Promise(resolve => setTimeout(resolve, 0));
-	}
-
 	#onInitializing() {
 		console.debug("Initializing game...");
 	}
