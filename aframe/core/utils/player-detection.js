@@ -5,14 +5,16 @@
  * @param {number} radius - Distance threshold.
  */
 export function isPlayerNearby(entity, player, radius = 1) {
-	if (!entity || !player)
-		throw TypeError("Both the entity and player must exist.");
+	if (!entity || !player) throw TypeError("Both the entity and player must exist.");
 
 	const entityPos = new THREE.Vector3();
 	const playerPos = new THREE.Vector3();
 
 	entity.object3D.getWorldPosition(entityPos);
 	player.object3D.getWorldPosition(playerPos);
+
+	entityPos.y = 0;
+	playerPos.y = 0;
 
 	return entityPos.distanceTo(playerPos) <= radius;
 }

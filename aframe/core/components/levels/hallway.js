@@ -1,5 +1,9 @@
+import {isPlayerNearby} from "@/aframe/core/utils/player-detection.js";
+
 AFRAME.registerComponent("hallway", {
 	init() {
+		this.player = this.el.sceneEl.querySelector("#player");
+
 		this.container = document.createElement("a-entity");
 		this.container.innerHTML = `
 			<a-entity
@@ -30,11 +34,18 @@ AFRAME.registerComponent("hallway", {
 			</a-box>
 		`;
 
+		this.el.appendChild(this.container);
+
+		// set tick rate
+		this.tick = AFRAME.utils.throttleTick(this.tick, 1 / 20 * 1000, this);
+	},
+
+	tick: function () {
 		this.container
 			.querySelectorAll(".level-trigger")
-			.forEach(lt => lt.addEventListener("click", () => this.onChangeLevel(lt.getAttribute("data-level"))));
-
-		this.el.appendChild(this.container);
+			.forEach(lt => {
+				if (isPlayerNearby(lt, this.player)) this.onChangeLevel(lt.getAttribute("data-level"));
+			});
 	},
 
 	onChangeLevel(level) {
