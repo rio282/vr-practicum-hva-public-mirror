@@ -4,7 +4,6 @@ import "@/css/style.scss";
 
 // js
 import * as bootstrap from "bootstrap";
-import "@/aframe/index.js";
-import {SuspiciousIsland} from "@/aframe/index.js";
+import {Game} from "@/aframe/index.js";
 
-SuspiciousIsland();
+Game();

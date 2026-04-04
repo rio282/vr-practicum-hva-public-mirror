@@ -36,7 +36,7 @@ import {GameStateManager} from "@/aframe/core/managers/gamestate-manager.js";
  * Main function to create the environment
  * @constructor
  */
-export function SuspiciousIsland() {
+export function Game() {
 	if (DEBUG_MODE) redirectConsoleOutputForAFrame();
 
 	// load
@@ -85,10 +85,10 @@ export function SuspiciousIsland() {
 								<!-- Light Source -->
 								${enablePovLightingSystem ? `
 								<a-entity
-								  id="playerLight"
-								  light="type: spot; color: #ffffff; intensity: 2.0; angle: 50; distance: 60; decay: 1.5; penumbra: 0.1;"
-								  position="0 0 -0.2"
-								  light-jitter>
+									id="playerLight"
+									light="type: spot; color: #ffffff; intensity: 2.0; angle: 50; distance: 60; decay: 1.5; penumbra: 0.1;"
+									position="0 0 -0.2"
+									light-jitter>
 								</a-entity>
 							` : ""}
 						</a-entity>
