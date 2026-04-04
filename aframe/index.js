@@ -1,6 +1,4 @@
 // aframe
-import {MapGenerator} from "./core/generators/map-generator";
-
 require("aframe");
 
 /**
@@ -17,11 +15,15 @@ require("@c-frame/aframe-physics-system");
 require("super-hands");
 
 // components
-require("@/aframe/core/components/hostile-entity.js");
-require("@/aframe/core/components/sacrificial-place.js");
+require("@/aframe/core/components/light-jitter.js");
+
+// import levels
+require("@/aframe/core/components/levels/hallway.js");
+require("@/aframe/core/components/levels/bedroom.js");
+
 
 // utils
-import {DEBUG_MODE} from "@/aframe/settings.js";
+import {DEBUG_MODE, enablePovLightingSystem} from "@/aframe/settings.js";
 import {redirectConsoleOutputForAFrame} from "@/aframe/core/utils/redirect-console-output.js";
 import {addCustomDevTools} from "@/aframe/core/utils/dev-tools.js";
 import {getModelFilesFromFolder} from "@/aframe/core/utils/path-utils.js";
@@ -52,8 +54,8 @@ export function SuspiciousIsland() {
 	view.innerHTML = `
 		<a-scene ${DEBUG_MODE ? "stats" : ""}
 			physics="gravity: -9.8; debug: ${DEBUG_MODE.toString()};"
-			fog="type: exponential; color: #050505; density: 0.09"
-			loading-screen="dotsColor: red; backgroundColor: black;">
+			fog="${enablePovLightingSystem ? 'type: exponential; color: #050505; density: 0.09' : ''}"
+			loading-screen="dotsColor: darkblue; backgroundColor: #8B0000;">
 				<a-assets>
 					<!-- textures -->
 					<img id="nav-mesh-texture" src="aframe/assets/textures/nav-mesh-texture.png" />
@@ -76,46 +78,43 @@ export function SuspiciousIsland() {
 								<!-- Desktop users -->
 								<a-entity
 									cursor="rayOrigin: mouse"
-									raycaster="objects: .grabbable">
+									raycaster="objects: .level-trigger">
 								</a-entity>
 
 								<!-- Light Source -->
+								${enablePovLightingSystem ? `
 								<a-entity
-									id="playerLight"
-									light="type: spot; color: #ffffff; intensity: 2.0; angle: 50; distance: 60; decay: 1.5; penumbra: 0.1;"
-									position="0 0 -0.2"
-									light-jitter>
+								  id="playerLight"
+								  light="type: spot; color: #ffffff; intensity: 2.0; angle: 50; distance: 60; decay: 1.5; penumbra: 0.1;"
+								  position="0 0 -0.2"
+								  light-jitter>
 								</a-entity>
+							` : ""}
 						</a-entity>
 
 						<!-- VR users -->
 						<!-- TODO: fix -->
-						<a-entity
-							id="leftHand"
-							hand-controls="hand: left"
-							super-hands="colliderEvent: raycaster-intersection"
-							raycaster="objects: .grabbable"
-						></a-entity>
-						<a-entity
-							id="rightHand"
-							hand-controls="hand: right"
-							super-hands="colliderEvent: raycaster-intersection"
-							raycaster="objects: .grabbable"
-						></a-entity>
+<!--						<a-entity-->
+<!--							id="leftHand"-->
+<!--							hand-controls="hand: left"-->
+<!--							super-hands="colliderEvent: raycaster-intersection"-->
+<!--							raycaster="objects: .grabbable"-->
+<!--						></a-entity>-->
+<!--						<a-entity-->
+<!--							id="rightHand"-->
+<!--							hand-controls="hand: right"-->
+<!--							super-hands="colliderEvent: raycaster-intersection"-->
+<!--							raycaster="objects: .grabbable"-->
+<!--						></a-entity>-->
 
 				</a-entity>
 
-				<a-entity gltf-model="#environment-temple" position="40 -2 -110"></a-entity>
-				<a-box sacrificial-place width="10" height="1" depth="9" position="45 -6 -150" visible="false"></a-box>
+				<a-entity id="level-root"></a-entity>
 
-				<a-entity
-					gltf-model="#environment-forest"
-					position="0 5 0"
-					scale="40 40 40">
-				</a-entity>
-
+				${enablePovLightingSystem ? `
 				<a-sky color="#0a0a0f"></a-sky>
 				<a-light type="ambient" color="#222233" intensity="0.8"></a-light>
+				` : ""}
 		</a-scene>
 	`;
 
@@ -125,56 +124,8 @@ export function SuspiciousIsland() {
 	// start
 	const scene = view.querySelector("a-scene");
 	const manager = new GameStateManager(scene);
-	// manager.start();
+	manager.start();
 
 	// NOTE: leave this at the end
 	scene.addEventListener("loaded", _ => addCustomDevTools());
 }
-
-
-AFRAME.registerComponent("light-jitter", {
-	schema: {
-		rotAmount: { default: 0.001 },
-		flickerSpeed: { default: 500000 },
-		intensityVar: { default: 0.25 },
-		angleVar: { default: 0.05 },
-		distanceVar: { default: 0.25 }
-	},
-
-	init: function () {
-		this.baseRotation = this.el.object3D.rotation.clone();
-
-		const light = this.el.getAttribute("light");
-		this.baseIntensity = light.intensity || 3;
-		this.baseAngle = light.angle || 20;
-		this.baseDistance = light.distance || 20;
-	},
-
-	tick: function (time) {
-		const obj = this.el.object3D;
-
-		obj.rotation.x = this.baseRotation.x + Math.sin(time / 300) * this.data.rotAmount;
-		obj.rotation.y = this.baseRotation.y + Math.cos(time / 400) * this.data.rotAmount;
-
-		const flicker = Math.sin(time / this.data.flickerSpeed);
-
-		const intensity =
-			this.baseIntensity +
-			flicker * this.data.intensityVar +
-			(Math.random() - 0.5) * 0.2;
-
-		const angle =
-			this.baseAngle +
-			Math.sin(time / 500) * this.data.angleVar;
-
-		const distance =
-			this.baseDistance +
-			Math.cos(time / 600) * this.data.distanceVar;
-
-		this.el.setAttribute("light", {
-			intensity: intensity,
-			angle: angle,
-			distance: distance
-		});
-	}
-});

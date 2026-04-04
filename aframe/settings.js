@@ -4,3 +4,4 @@ export const keymap = {
 	toggleStats: "p",
 	toggleNavMeshOverlay: "n",
 };
+export const enablePovLightingSystem = false;
