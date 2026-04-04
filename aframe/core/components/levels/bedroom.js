@@ -8,6 +8,16 @@ AFRAME.registerComponent("bedroom", {
 				scale="7 7 7"
 				position="0 6 0"
 			></a-entity>
+
+			<a-box
+				position="11.89 0.85 17.67"
+				width="1.75"
+				height="0.05"
+				depth="5.67"
+				geometry="primitive: box"
+				material="color: red;"
+				class="safe-zone final-safe-zone">
+			</a-box>
 		`;
 
 		this.el.appendChild(this.container);
