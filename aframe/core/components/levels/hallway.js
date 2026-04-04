@@ -8,21 +8,26 @@ AFRAME.registerComponent("hallway", {
 				position="0 1.25 0">
 			</a-entity>
 
-			<a-entity
-				position="0 1 -5"
+			<a-box
+				position="1 -3 16"
+				width="7"
+				height="0.05"
+				depth="5"
 				geometry="primitive: box"
-				material="color: red"
+				material="color: red;"
 				data-level="bedroom"
 				class="level-trigger">
-			</a-entity>
+			</a-box>
 
-			<a-entity
-				position="3 1 -5"
-				geometry="primitive: box"
-				material="color: blue"
+			<a-box
+				position="1 -3 -27"
+				width="7"
+				height="0.05"
+				depth="5"
+				material="color: blue;"
 				data-level="kitchen"
 				class="level-trigger">
-			</a-entity>
+			</a-box>
 		`;
 
 		this.container
