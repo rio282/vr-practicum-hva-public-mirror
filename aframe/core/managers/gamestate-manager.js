@@ -115,6 +115,9 @@ export class GameStateManager {
 
 		await new Promise(resolve => setTimeout(resolve, 0));
 		this.#scene.emit("level-loaded", { level });
+
+		// reset player position
+		this.#scene.querySelector("#player").setAttribute("position", "0 0 0");
 	}
 
 	#getOrCreateLevelRoot() {
