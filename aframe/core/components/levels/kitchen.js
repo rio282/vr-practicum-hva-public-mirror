@@ -56,8 +56,11 @@ AFRAME.registerComponent("kitchen", {
 		const stages = [
 			async () => {
 				// stage 1: mom moves
-				await this.moveCharacter(mom, {x: -9, y: -3.5, z: 9}, "walking", "idle", 2000);
-				await this.moveCharacter(dad, {x: -7, y: -3.5, z: 9}, "Walking", "Idle", 2000);
+				const walkingTime = 3456;
+				this.faceEachOther(mom, dad);
+				this.moveCharacter(mom, {x: -9, y: -3.5, z: 9}, "walking", "idle", walkingTime);
+				this.moveCharacter(dad, {x: -7, y: -3.5, z: 9}, "Walking", "Idle", walkingTime);
+				await this.delay(walkingTime);
 				this.faceEachOther(mom, dad);
 			},
 			async () => {
@@ -87,7 +90,7 @@ AFRAME.registerComponent("kitchen", {
 		this.runStagesSequentially(stages).then(() => this.el.sceneEl.emit("end-cutscene"));
 	},
 
-	async moveCharacter(character, target, walkClip, idleClip, duration = 3456) {
+	async moveCharacter(character, target, walkClip, idleClip, duration = 3000) {
 		return new Promise(resolve => {
 			// move position
 			character.setAttribute("animation", {
