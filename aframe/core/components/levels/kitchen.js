@@ -47,49 +47,81 @@ AFRAME.registerComponent("kitchen", {
 	},
 
 	startCutscene() {
-		// emit game cutscene state
 		this.el.sceneEl.emit("start-cutscene");
 
 		const mom = this.container.querySelector("#mom");
 		const dad = this.container.querySelector("#dad");
 
-		// define start & end positions
-		const momTarget = {x: -9, y: -3.5, z: 9};
-		const dadTarget = {x: -7, y: -3.5, z: 9};
+		// define stages
+		const stages = [
+			async () => {
+				// stage 1: mom moves
+				await this.moveCharacter(mom, {x: -9, y: -3.5, z: 9}, "walking", "idle", 2000);
+				await this.moveCharacter(dad, {x: -7, y: -3.5, z: 9}, "Walking", "Idle", 2000);
+				this.faceEachOther(mom, dad);
+			},
+			async () => {
+				// stage 2: wait a little
+				await this.delay(1000);
+			},
+			async () => {
+				// stage 3: start talking
+			},
+			async () => {
+				// stage 4: crashout
+			},
+			async () => {
+				// stage 5: dad storms out
+			},
+			async () => {
+				// stage 6: mom says its all *YOUR* fault
+			},
+			async () => {
+				// stage 7: mom walks out
+			},
+			async () => {
+				// stage 8: player takes control again, we grab our bag and leave
+			},
+		];
 
-		// move characters
-		this.moveCharacter(mom, momTarget);
-		this.moveCharacter(dad, dadTarget);
-
-		// rotate characters to face each other after arriving
-		setTimeout(() => this.faceEachOther(mom, dad), 1500);
-
-		// end cutscene after 4 seconds
-		setTimeout(() => this.el.sceneEl.emit("end-cutscene"), 5000);
+		this.runStagesSequentially(stages).then(() => this.el.sceneEl.emit("end-cutscene"));
 	},
 
-	moveCharacter(character, target) {
-		const duration = 3456;
-		character.setAttribute("animation", {
-			property: "position",
-			to: `${target.x} ${target.y} ${target.z}`,
-			dur: duration,
-			easing: "easeOutQuad"
-		});
-
-		character.setAttribute("animation-mixer", {
-			clip: character.id === "mom" ? "walking" : "Walking",
-			loop: "repeat",
-			timeScale: 1,
-		});
-
-		setTimeout(() => {
-			character.setAttribute("animation-mixer", {
-				clip: character.id === "mom" ? "idle" : "Idle",
-				loop: "repeat",
-				timeScale: 1,
+	async moveCharacter(character, target, walkClip, idleClip, duration = 3456) {
+		return new Promise(resolve => {
+			// move position
+			character.setAttribute("animation", {
+				property: "position",
+				to: `${target.x} ${target.y} ${target.z}`,
+				dur: duration,
+				easing: "easeOutQuad"
 			});
-		}, duration);
+
+			// play walking animation
+			character.setAttribute("animation-mixer", {
+				clip: walkClip,
+				loop: "repeat",
+				timeScale: 1
+			});
+
+			// after movement finishes, switch to idle
+			setTimeout(() => {
+				character.setAttribute("animation-mixer", {
+					clip: idleClip,
+					loop: "repeat",
+					timeScale: 1
+				});
+				resolve();
+			}, duration);
+		});
+	},
+
+	async runStagesSequentially(stages) {
+		for (const stage of stages) await stage();
+	},
+
+	delay(ms) {
+		return new Promise(resolve => setTimeout(resolve, ms));
 	},
 
 	faceEachOther(charA, charB) {
