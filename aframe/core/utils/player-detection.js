@@ -18,3 +18,21 @@ export function isPlayerNearby(entity, player, radius = 1) {
 
 	return entityPos.distanceTo(playerPos) <= radius;
 }
+
+/**
+ * Checks if the player is the exact bounds of the entity (x, z only)
+ * @param entity
+ * @param player
+ */
+export function isPlayerInBounds(entity, player) {
+	if (!entity || !player) throw TypeError("Both the entity and player must exist.");
+
+	const box = new THREE.Box3().setFromObject(entity.object3D);
+	const playerPos = new THREE.Vector3();
+
+	player.object3D.getWorldPosition(playerPos);
+
+	playerPos.y = box.min.y;
+
+	return box.containsPoint(playerPos);
+}

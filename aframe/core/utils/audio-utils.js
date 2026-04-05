@@ -20,11 +20,18 @@ export class AmbientAudio {
 
 	static setVolume(volume) {
 		if (!this.#ambienceEl) return;
+
 		const soundComponent = this.#ambienceEl.components.sound;
-		if (soundComponent) {
-			soundComponent.data.volume = volume;
-			soundComponent.update();
-		}
+		if (!soundComponent || !soundComponent.data) return;
+
+		if (soundComponent.data.volume === volume) return;
+
+		this.#ambienceEl.setAttribute("sound", "volume", volume);
+	}
+
+	static getVolume() {
+		if (!this.#ambienceEl) return;
+		return this.#ambienceEl.components.sound.data.volume;
 	}
 
 	static stop() {

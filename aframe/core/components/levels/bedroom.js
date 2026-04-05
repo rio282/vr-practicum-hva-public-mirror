@@ -1,11 +1,21 @@
 import {getRandomNumber} from "@/js/utils/number";
+import {isPlayerInBounds} from "@/aframe/core/utils/player-detection";
 import {AmbientAudio} from "@/aframe/core/utils/audio-utils";
 import {DEBUG_MODE} from "@/aframe/settings";
 
 AFRAME.registerComponent("bedroom", {
-	init() {
-		this.container = document.createElement("a-entity");
+	defaultAudioVolume: 0.04,
 
+	lightRelaxFactor: 1.1,  // higher is better
+	audioRelaxFactor: 0.867,  // lower is better
+
+	init() {
+		// environment setup
+		this.player = this.el.sceneEl.querySelector("#player");
+		this.playerLight = this.player.querySelector("#playerLight");
+		this.defaultLight = {...this.playerLight?.getAttribute("light")};
+
+		this.container = document.createElement("a-entity");
 		this.container.innerHTML = `
 			<a-entity
 				gltf-model="#environment-bedroom"
@@ -40,7 +50,50 @@ AFRAME.registerComponent("bedroom", {
 
 		this.el.appendChild(this.container);
 
-		AmbientAudio.start(`#audio-parent_arguing_${getRandomNumber(1, 3)}`, 0.05);
+		AmbientAudio.start(`#audio-parent_arguing_${getRandomNumber(1, 3)}`, this.defaultAudioVolume);
+
+		// vars
+		this.currentSafeZone = null;
+
+		// set tick rate
+		this.tick = AFRAME.utils.throttleTick(this.tick, 1 / 20 * 1000, this);
+	},
+
+	tick: function () {
+		let wasInSafeZone = this.isInSafeZone;
+		let isInSafeZone = false;
+
+		this.container.querySelectorAll(".safe-zone").forEach(sz => {
+			if (isPlayerInBounds(sz, this.player)) {
+				this.currentSafeZone = sz;
+				isInSafeZone = true;
+			}
+		});
+
+		// only trigger on change
+		if (wasInSafeZone !== isInSafeZone) {
+			this.isInSafeZone = isInSafeZone;
+
+			if (isInSafeZone) this.onEnterSafeZone();
+			else this.onExitSafeZone();
+		}
+	},
+
+	onEnterSafeZone() {
+		AmbientAudio.setVolume(this.defaultAudioVolume * this.audioRelaxFactor);
+
+		if (!this.playerLight) return;
+
+		let light = this.playerLight.getAttribute("light");
+		light.intensity = this.defaultLight.intensity * (this.lightRelaxFactor * 2.22);
+		light.angle = this.defaultLight.angle * this.lightRelaxFactor;
+		light.distance = this.defaultLight.distance * (this.lightRelaxFactor * 2);
+
+		this.el.sceneEl.emit("update-player-light-base-values", light);
+	},
+
+	onExitSafeZone() {
+		this.el.sceneEl.emit("update-player-light-base-values", this.defaultLight);
 	},
 
 	remove() {
