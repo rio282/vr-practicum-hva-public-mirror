@@ -133,7 +133,7 @@ AFRAME.registerComponent("bedroom", {
 		}
 
 		// draw line to next safe zone
-		const next = safeZones.find(z => parseInt(z.dataset.zoneOrder) > (this.lastSafeZone?.dataset.zoneOrder || -1)) || false;
+		const next = safeZones.find(z => parseInt(z.dataset.zoneOrder) > (this.lastSafeZone?.dataset.zoneOrder || -1)) || false;  // its (5 am and i dont know anymore bruh)
 		if (next) {
 			this.safeZoneLine.setAttribute("line", {
 				start: `${this.player.object3D.position.x} 1 ${this.player.object3D.position.z}`,
