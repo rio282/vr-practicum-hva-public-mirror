@@ -4,7 +4,7 @@ import {AmbientAudio} from "@/aframe/core/utils/audio-utils";
 import {DEBUG_MODE} from "@/aframe/settings";
 
 AFRAME.registerComponent("bedroom", {
-	defaultAudioVolume: 0.225,
+	defaultAudioVolume: 0.175,
 	audioRelaxFactor: 0.2,  // lower is better
 	lightRelaxFactor: 1.1,  // higher is better
 
