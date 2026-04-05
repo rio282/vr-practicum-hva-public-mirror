@@ -14,10 +14,8 @@ AFRAME.registerComponent("ui-instruction", {
 
 		this.el.appendChild(this.textEl);
 
-		// listen globally
 		this.el.sceneEl.addEventListener("set-instruction", (e) => {
 			const {value, visible = true} = e.detail;
-
 			this.textEl.setAttribute("text", "value", value);
 			this.textEl.setAttribute("visible", visible);
 		});

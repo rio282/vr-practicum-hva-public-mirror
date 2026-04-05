@@ -1,4 +1,4 @@
-import {AmbientAudio, speakText, getVoice} from "@/aframe/core/utils/audio-utils";
+import {AmbientAudio, getVoice} from "@/aframe/core/utils/audio-utils";
 import {isPlayerNearby} from "@/aframe/core/utils/player-detection";
 
 AFRAME.registerComponent("kitchen", {
@@ -39,7 +39,6 @@ AFRAME.registerComponent("kitchen", {
                 static-body
                 visible="false">
 			</a-box>
-
 			<a-box
                 position="-13.5 -3.5 -2.5"
                 width="1"
@@ -54,21 +53,18 @@ AFRAME.registerComponent("kitchen", {
                 depth="4"
                 class="level-trigger">
             </a-box>
-
             <a-entity
                 id="mom"
                 gltf-model="#npc-mom"
                 position="-12 -3.5 -3"
                 scale="3 3 3">
             </a-entity>
-
             <a-entity
                 id="dad"
                 gltf-model="#npc-dad"
                 position="9 -3.5 10"
                 scale="3 3 3">
             </a-entity>
-
 			<a-entity
                 id="bag"
                 gltf-model="#item-bag"
@@ -86,7 +82,7 @@ AFRAME.registerComponent("kitchen", {
 		// start eerie audio
 		AmbientAudio.start("#audio-eerie_1", 0.125, false);
 
-		// start cutscene after some time
+		// start cutscene after level loads
 		this.onLevelLoaded = (e) => {
 			if (e.detail.level !== "kitchen") return;
 			setTimeout(() => this.startCutscene(), 3000);
@@ -107,7 +103,7 @@ AFRAME.registerComponent("kitchen", {
 
 	startCutscene() {
 		this.el.sceneEl.emit("start-cutscene");
-		this.el.sceneEl.emit("set-instruction", {value: "Remain calm."});
+		this.el.sceneEl.emit("set-instruction", {value: ">>> Remain calm."});
 
 		const mom = this.container.querySelector("#mom");
 		const dad = this.container.querySelector("#dad");
@@ -130,85 +126,60 @@ AFRAME.registerComponent("kitchen", {
 				await this.delay(1000);
 			},
 			async () => {
-				await speakText("You need to listen to me!", {
-					rate: 0.9,
-					pitch: 1.1,
-					volume: 1,
-					voice: getVoice("English")
-				});
+				this.showSubtitle("You need to listen to me!");
+				await this.delay(2500);
 
-				await speakText("I can't believe this is happening!", {
-					rate: 0.95,
-					pitch: 0.67,
-					voice: getVoice("English")
-				});
+				this.showSubtitle("I can't believe this is happening!");
+				await this.delay(2500);
 			},
 			async () => {
-				await speakText("You never listen! You never do!", {
-					rate: 1.05,
-					pitch: 1.1
-				});
+				this.showSubtitle("You never listen! You never do!");
+				await this.delay(2500);
 
-				await speakText("Don't turn this on me again!", {
-					rate: 1.0,
-					pitch: 0.6
-				});
+				this.showSubtitle("Don't turn this on me again!");
+				await this.delay(2500);
 			},
 			async () => {
-				await speakText("I'm done. I'm not doing this anymore.", {
-					rate: 0.9,
-					pitch: 0.6
-				});
+				this.showSubtitle("I'm done. I'm not doing this anymore.");
+				await this.delay(2500);
 
-				await this.moveCharacter(
-					dad,
-					{x: 15, y: -3.5, z: 20},
-					"Walking",
-					"Idle",
-					2500
-				);
+				await this.moveCharacter(dad, {x: 15, y: -3.5, z: 20}, "Walking", "Idle", 2500);
 			},
 			async () => {
 				this.faceEachOther(mom, this.player);
 
-				await speakText("This is your fault.", {
-					rate: 0.8,
-					pitch: 0.9
-				});
+				this.showSubtitle("This is your fault.");
+				await this.delay(2000);
 
-				await speakText("Do you hear me?", {
-					rate: 0.75,
-					pitch: 0.85
-				});
+				this.showSubtitle("Do you hear me?");
+				await this.delay(2000);
 
-				await speakText("Your fault.", {
-					rate: 0.80,
-					pitch: 0.80,
-					volume: 2.0
-				});
+				this.showSubtitle("Your fault.");
+				await this.delay(2000);
 			},
 			async () => {
-				await this.moveCharacter(
-					mom,
-					{x: -15, y: -3.5, z: 20},
-					"walking",
-					"idle",
-					2500
-				);
+				await this.moveCharacter(mom, {x: -15, y: -3.5, z: 20}, "walking", "idle", 2500);
 			},
 			async () => {
 				await this.delay(1500);
 				AmbientAudio.setVolume(AmbientAudio.getVolume() / 2);
-				this.el.sceneEl.emit("set-instruction", {value: "Grab your bag and go outside"});
+				this.showSubtitle(">>> Grab your bag and go outside");
+				await this.delay(2500);
 			}
 		];
 
-		this.runStagesSequentially(stages).then(() => this.el.sceneEl.emit("end-cutscene"));
+		this.runStagesSequentially(stages).then(() => {
+			this.el.sceneEl.emit("end-cutscene");
+			this.el.sceneEl.emit("clear-instruction");
+		});
+	},
+
+	showSubtitle(text) {
+		this.el.sceneEl.emit("set-instruction", {value: text});
 	},
 
 	async moveCharacter(character, target, walkClip, idleClip, duration = 3000) {
 		return new Promise(resolve => {
-			// move position
 			character.setAttribute("animation", {
 				property: "position",
 				to: `${target.x} ${target.y} ${target.z}`,
@@ -216,14 +187,12 @@ AFRAME.registerComponent("kitchen", {
 				easing: "easeOutQuad"
 			});
 
-			// play walking animation
 			character.setAttribute("animation-mixer", {
 				clip: walkClip,
 				loop: "repeat",
 				timeScale: 1
 			});
 
-			// after movement finishes, switch to idle
 			setTimeout(() => {
 				character.setAttribute("animation-mixer", {
 					clip: idleClip,
