@@ -1,3 +1,6 @@
+import {AmbientAudio} from "@/aframe/core/utils/audio-utils";
+import {getRandomNumber} from "@/js/utils/number";
+
 AFRAME.registerComponent("bedroom", {
 	init() {
 		this.container = document.createElement("a-entity");
@@ -21,9 +24,12 @@ AFRAME.registerComponent("bedroom", {
 		`;
 
 		this.el.appendChild(this.container);
+
+		AmbientAudio.start(`#audio-parent_arguing_${getRandomNumber(1, 3)}`, 0.05);
 	},
 
 	remove() {
+		AmbientAudio.stop();
 		if (this.container) this.container.remove();
 	}
 });

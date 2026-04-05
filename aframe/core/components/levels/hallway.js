@@ -46,7 +46,7 @@ AFRAME.registerComponent("hallway", {
 		this.container
 			.querySelectorAll(".level-trigger")
 			.forEach(lt => {
-				if (isPlayerNearby(lt, this.player)) this.onChangeLevel(lt.getAttribute("data-level"));
+				if (isPlayerNearby(lt, this.player, 1.5)) this.onChangeLevel(lt.getAttribute("data-level"));
 			});
 	},
 

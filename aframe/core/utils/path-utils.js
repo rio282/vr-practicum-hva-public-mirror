@@ -1,7 +1,13 @@
-const _context = require.context(
+export const _m_context = require.context(
 	"@/aframe/assets/models",
 	true,
 	/\.(glb|gltf|obj)$/
+);
+
+export const _a_context = require.context(
+	"@/aframe/assets/audio",
+	true,
+	/\.(mp3|wav|ogg)$/
 );
 
 /**
@@ -14,7 +20,7 @@ const _context = require.context(
  * - src: resolved module path (usable as asset source)
  * - id: normalized ID (prefixed with '#', safe for DOM/A-Frame usage)
  */
-export function getModelFilesFromFolder(folder = "") {
+export function getFilesFromFolder(folder = "", ctx = _m_context) {
 	const removeFileExtension = (filename) => {
 		const lastDotIndex = filename.lastIndexOf('.');
 		return lastDotIndex <= 0 ? filename : filename.slice(0, lastDotIndex);
@@ -34,7 +40,7 @@ export function getModelFilesFromFolder(folder = "") {
 			.replace(/^\.\//, "")
 			.replace(/[\/\\]/g, "-");
 
-	return _context.keys()
+	return ctx.keys()
 		.filter((path) => {
 			if (!folder) return true;
 			const normalizedFolder = folder.replace(/^\/|\/$/g, "");
@@ -42,7 +48,7 @@ export function getModelFilesFromFolder(folder = "") {
 		})
 		.map((path) => ({
 			filename: path.replace("./", ""),
-			src: _context(path),
+			src: ctx(path),
 			id: `#${normalizeId(path)}`
 		}));
 }

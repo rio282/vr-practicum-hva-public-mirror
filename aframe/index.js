@@ -27,7 +27,7 @@ require("@/aframe/core/components/levels/kitchen.js");
 import {DEBUG_MODE, enablePovLightingSystem} from "@/aframe/settings.js";
 import {redirectConsoleOutputForAFrame} from "@/aframe/core/utils/redirect-console-output.js";
 import {addCustomDevTools} from "@/aframe/core/utils/dev-tools.js";
-import {getModelFilesFromFolder} from "@/aframe/core/utils/path-utils.js";
+import {getFilesFromFolder, _m_context, _a_context} from "@/aframe/core/utils/path-utils.js";
 
 // managers
 import {GameStateManager} from "@/aframe/core/managers/gamestate-manager.js";
@@ -43,11 +43,19 @@ export function Game() {
 	const preloadAssets = document.createElement("div");
 	preloadAssets.id = "assets-temp";
 
-	getModelFilesFromFolder().forEach(model => {
+	getFilesFromFolder("", _m_context).forEach(model => {
 		const assetItem = document.createElement("a-asset-item");
 		assetItem.setAttribute("id", model.id.replace("#", ""));
 		assetItem.setAttribute("src", model.src);
 		preloadAssets.appendChild(assetItem);
+	});
+
+	getFilesFromFolder("", _a_context).forEach(model => {
+		const audio = document.createElement("audio");
+		audio.setAttribute("id", `audio-${model.id.replace("#", "")}`);
+		audio.setAttribute("src", model.src);
+		audio.setAttribute("crossorigin", "anonymous");
+		preloadAssets.appendChild(audio);
 	});
 
 	// update the view
