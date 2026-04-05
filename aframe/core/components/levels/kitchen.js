@@ -31,6 +31,14 @@ AFRAME.registerComponent("kitchen", {
                 nav-mesh
                 visible="false">
 			</a-box>
+			<a-box
+                position="-5.5 0 -8"
+                width="4"
+                height="0.05"
+                depth="2"
+                static-body
+                visible="false">
+			</a-box>
 
 			<a-box
                 position="-13.5 -3.5 -2.5"
@@ -64,7 +72,7 @@ AFRAME.registerComponent("kitchen", {
 			<a-entity
                 id="bag"
                 gltf-model="#item-bag"
-                position="-8.7 -3.5 -7"
+                position="-6.7 0.5 -7"
                 scale="0.2 0.2 0.2"
                 dynamic-body="shape: box;"
                 mouse-drag

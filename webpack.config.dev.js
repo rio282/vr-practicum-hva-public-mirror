@@ -3,7 +3,6 @@ const common = require("./webpack.common.js");
 
 module.exports = merge(common, {
 	mode: "development",
-	entry: "./js/app.js",
 	devtool: "inline-source-map",
 	devServer: {
 		liveReload: true,
