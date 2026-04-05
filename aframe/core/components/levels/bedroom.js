@@ -1,5 +1,6 @@
 import {getRandomNumber} from "@/js/utils/number";
 import {AmbientAudio} from "@/aframe/core/utils/audio-utils";
+import {DEBUG_MODE} from "@/aframe/settings";
 
 AFRAME.registerComponent("bedroom", {
 	init() {
@@ -13,13 +14,27 @@ AFRAME.registerComponent("bedroom", {
 			></a-entity>
 
 			<a-box
+				data-zone-order="0"
+				position="-12.1 0.85 -2.8"
+				width="7.33"
+				height="0.05"
+				depth="16"
+				geometry="primitive: box"
+				material="color: red;"
+				visible="${DEBUG_MODE}"
+				class="safe-zone">
+			</a-box>
+
+			<a-box
+				data-zone-order="1"
 				position="11.89 0.85 17.67"
 				width="1.75"
 				height="0.05"
 				depth="5.67"
 				geometry="primitive: box"
 				material="color: red;"
-				class="safe-zone final-safe-zone">
+				visible="${DEBUG_MODE}"
+				class="safe-zone">
 			</a-box>
 		`;
 

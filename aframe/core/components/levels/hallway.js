@@ -34,6 +34,8 @@ AFRAME.registerComponent("hallway", {
 				data-level="${LEVELS.KITCHEN}"
 				class="level-trigger">
 			</a-box>
+
+			<!-- TODO: maybe show which level is first (canon), but don't force. -->
 		`;
 
 		this.el.appendChild(this.container);
