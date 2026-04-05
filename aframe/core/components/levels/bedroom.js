@@ -4,10 +4,9 @@ import {AmbientAudio} from "@/aframe/core/utils/audio-utils";
 import {DEBUG_MODE} from "@/aframe/settings";
 
 AFRAME.registerComponent("bedroom", {
-	defaultAudioVolume: 0.04,
-
+	defaultAudioVolume: 0.225,
+	audioRelaxFactor: 0.2,  // lower is better
 	lightRelaxFactor: 1.1,  // higher is better
-	audioRelaxFactor: 0.867,  // lower is better
 
 	init() {
 		// environment setup
@@ -93,6 +92,7 @@ AFRAME.registerComponent("bedroom", {
 	},
 
 	onExitSafeZone() {
+		AmbientAudio.setVolume(this.defaultAudioVolume);
 		this.el.sceneEl.emit("update-player-light-base-values", this.defaultLight);
 	},
 
