@@ -136,6 +136,14 @@ export function Game() {
 	const manager = new GameStateManager(scene);
 	manager.start();
 
+	scene.addEventListener("start-cutscene", () => {
+		// TODO: remove user input
+	});
+
+	scene.addEventListener("end-cutscene", () => {
+		// TODO: re-add user input
+	});
+
 	// --- fixes weird bug where audio won't start playing because of supposed suspended state.
 	function unlockAudioContext() {
 		if (!scene.audioListener) return;
@@ -146,7 +154,7 @@ export function Game() {
 			if (ctx.state === "suspended") ctx.resume();
 		};
 
-		// Resume on normal user input
+		// resume on normal user input
 		window.addEventListener("click", resumeAudio, { once: true });
 		window.addEventListener("keydown", resumeAudio, { once: true });
 		window.addEventListener("touchstart", resumeAudio, { once: true });
@@ -156,10 +164,10 @@ export function Game() {
 			const session = scene.renderer.xr.getSession?.();
 			if (!session) return;
 
-			// Try to resume immediately
+			// try to resume immediately
 			resumeAudio();
 
-			// Resume when XR input sources fire
+			// resume when XR input sources fire
 			const resumeOnInput = () => {
 				resumeAudio();
 				session.removeEventListener("select", resumeOnInput);
