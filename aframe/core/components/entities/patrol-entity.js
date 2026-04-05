@@ -6,13 +6,17 @@ AFRAME.registerComponent("patrol-entity", {
 	},
 
 	init() {
-		this.target = new THREE.Vector3(
-			this.data.pointB.x,
-			this.data.pointB.y,
-			this.data.pointB.z
-		);
+		const {pointA, pointB} = this.data;
+		const vecA = new THREE.Vector3(pointA.x, pointA.y, pointA.z);
+		const vecB = new THREE.Vector3(pointB.x, pointB.y, pointB.z);
 
-		this.pos = new THREE.Vector3();
+		// random lerp u feel me
+		const t = Math.random();
+		this.pos = vecA.clone().lerp(vecB, t);
+		this.target = Math.random() < 0.5 ? vecA.clone() : vecB.clone();
+
+		// apply initial position
+		this.el.object3D.position.copy(this.pos);
 	},
 
 	tick(time, delta) {

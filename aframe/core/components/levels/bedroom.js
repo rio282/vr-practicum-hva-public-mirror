@@ -1,5 +1,5 @@
 import {getRandomNumber} from "@/js/utils/number";
-import {isPlayerInBounds} from "@/aframe/core/utils/player-detection";
+import {isPlayerInBounds, isPlayerNearby} from "@/aframe/core/utils/player-detection";
 import {AmbientAudio} from "@/aframe/core/utils/audio-utils";
 import {DEBUG_MODE} from "@/aframe/settings";
 
@@ -37,6 +37,18 @@ AFRAME.registerComponent("bedroom", {
 
 			<a-box
 				data-zone-order="1"
+				position="-15 0.85 17"
+				width="1.7"
+				height="0.05"
+				depth="4.5"
+				geometry="primitive: box"
+				material="color: red;"
+				visible="${DEBUG_MODE}"
+				class="safe-zone">
+			</a-box>
+
+			<a-box
+				data-zone-order="2"
 				position="11.89 0.85 17.67"
 				width="1.75"
 				height="0.05"
@@ -72,7 +84,7 @@ AFRAME.registerComponent("bedroom", {
 				pointB: `${pos.to.x} 1 ${pos.to.z}`,
 				speed: getRandomNumber(5, 10),
 			});
-			this.container.querySelector("[entity-container]").appendChild(patrolEntity);
+			// this.container.querySelector("[entity-container]").appendChild(patrolEntity);
 		});
 
 		this.el.appendChild(this.container);
@@ -80,7 +92,7 @@ AFRAME.registerComponent("bedroom", {
 		AmbientAudio.start(`#audio-parent_arguing_${getRandomNumber(1, 3)}`, this.defaultAudioVolume);
 
 		// vars
-		this.currentSafeZone = null;
+		this.lastSafeZone = null;
 
 		// set tick rate
 		this.tick = AFRAME.utils.throttleTick(this.tick, 1 / 20 * 1000, this);
@@ -90,9 +102,10 @@ AFRAME.registerComponent("bedroom", {
 		let wasInSafeZone = this.isInSafeZone;
 		let isInSafeZone = false;
 
+		// check safe zone stuff
 		this.container.querySelectorAll(".safe-zone").forEach(sz => {
 			if (isPlayerInBounds(sz, this.player)) {
-				this.currentSafeZone = sz;
+				this.lastSafeZone = sz;
 				isInSafeZone = true;
 			}
 		});
@@ -104,6 +117,11 @@ AFRAME.registerComponent("bedroom", {
 			if (isInSafeZone) this.onEnterSafeZone();
 			else this.onExitSafeZone();
 		}
+
+		// check entity stuff
+		this.container.querySelectorAll("[patrol-entity]").forEach(pe => {
+			if (isPlayerNearby(pe, this.player, 1.5)) this.el.sceneEl.emit("game-over");
+		});
 	},
 
 	onEnterSafeZone() {
