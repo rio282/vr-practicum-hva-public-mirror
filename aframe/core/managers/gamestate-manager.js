@@ -19,7 +19,7 @@ const VALID_TRANSITIONS = {
 	[STATE.INITIALIZING]: [STATE.PLAYING],
 	[STATE.PLAYING]: [STATE.IN_CUTSCENE, STATE.GAME_OVER, STATE.GAME_WON],
 	[STATE.IN_CUTSCENE]: [STATE.PLAYING],
-	[STATE.GAME_OVER]: [],
+	[STATE.GAME_OVER]: [STATE.PLAYING],
 	[STATE.GAME_WON]: [],
 };
 
@@ -33,10 +33,7 @@ export class GameStateManager {
 		this.#scene = scene;
 		this.#currentLevel = startingLevel;
 
-		this.#scene.addEventListener("change-level", (e) => this.changeLevel(
-			e.detail.level,
-			e.detail.playerStartingPosition ?? {x: 0, y: 0, z: 0}
-		));
+		this.#scene.addEventListener("change-level", (e) => this.changeLevel(e.detail.level));
 		this.#scene.addEventListener("game-over", () => this.setState(STATE.GAME_OVER));
 		this.#scene.addEventListener("game-won", () => this.setState(STATE.GAME_WON));
 		this.#scene.addEventListener("start-cutscene", () => this.setState(STATE.IN_CUTSCENE));
@@ -57,10 +54,10 @@ export class GameStateManager {
 		return this.#currentLevel;
 	}
 
-	async changeLevel(newLevel, playerStartingPosition = {x: 0, y: 0, z: 0}) {
+	async changeLevel(newLevel) {
 		if (newLevel === this.#currentLevel) return;
 		AmbientAudio.stop();
-		await this.loadLevel(newLevel, playerStartingPosition);
+		await this.loadLevel(newLevel);
 	}
 
 	setState(newState) {
@@ -109,7 +106,7 @@ export class GameStateManager {
 		}
 	}
 
-	async loadLevel(level, playerStartingPosition = {x: 0, y: 0, z: 0}) {
+	async loadLevel(level) {
 		console.debug(`Loading level: ${level}`);
 		const levelRoot = this.#getOrCreateLevelRoot();
 
@@ -123,7 +120,16 @@ export class GameStateManager {
 		await new Promise(resolve => setTimeout(resolve, 0));
 		this.#scene.emit("level-loaded", {level});
 
-		// reset player position
+		// set player position
+		let playerStartingPosition = {x: 0, y: 0, z: 0};
+		switch (level) {
+			case LEVELS.BEDROOM:
+				playerStartingPosition.x = -10;
+				playerStartingPosition.z = -7;
+				break;
+			default:
+				break;
+		}
 		this.#scene.querySelector("#player").setAttribute("position", `${playerStartingPosition.x} ${playerStartingPosition.y} ${playerStartingPosition.z}`);
 	}
 
@@ -156,8 +162,9 @@ export class GameStateManager {
 	#onGameOver() {
 		console.debug("Game over");
 
-		this.#scene.emit("disable-controls");
-		this.#scene.emit("show-game-over");
+		// restart the level after a short delay to let any effects play out
+		AmbientAudio.stop();
+		this.loadLevel(this.#currentLevel).then(() => this.setState(STATE.PLAYING));
 	}
 
 	#onGameWon() {

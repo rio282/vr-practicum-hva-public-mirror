@@ -98,7 +98,7 @@ AFRAME.registerComponent("bedroom", {
 			color: this.guideLineColor,
 			opacity: 0.5
 		});
-		this.el.appendChild(this.safeZoneLine);
+		this.container.appendChild(this.safeZoneLine);
 
 		AmbientAudio.start(`#audio-parent_arguing_${getRandomNumber(1, 3)}`, this.defaultAudioVolume);
 

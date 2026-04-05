@@ -55,20 +55,7 @@ AFRAME.registerComponent("hallway", {
 	},
 
 	onChangeLevel(level) {
-		let playerStartingPosition = {x: 0, y: 0, z: 0};
-		switch (level) {
-			case LEVELS.BEDROOM:
-				playerStartingPosition.x = -10;
-				playerStartingPosition.z = -7;
-				break;
-			default:
-				break;
-		}
-
-		this.el.sceneEl.emit("change-level", {
-			level,
-			playerStartingPosition
-		});
+		this.el.sceneEl.emit("change-level", {level});
 	},
 
 	remove() {
