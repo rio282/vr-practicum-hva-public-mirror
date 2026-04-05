@@ -11,6 +11,16 @@ AFRAME.registerComponent("kitchen", {
                 scale="0.1 0.1 0.1"
                 position="0 -3.5 0"
             ></a-entity>
+			<a-entity position="0 5 4">
+				<a-spot
+					color="#fff8e1"
+					intensity="7"
+					angle="60"
+					penumbra="0.3"
+					distance="25"
+					rotation="-90 0 0">
+				</a-spot>
+			</a-entity>
 
             <a-entity
                 id="mom"
@@ -59,16 +69,27 @@ AFRAME.registerComponent("kitchen", {
 	},
 
 	moveCharacter(character, target) {
-		// try pathfinding here (pseudo)
-		// TODO: using three js?
-
-		// if pathfinding unavailable, fallback to animation
+		const duration = 3456;
 		character.setAttribute("animation", {
 			property: "position",
 			to: `${target.x} ${target.y} ${target.z}`,
-			dur: 3456,
+			dur: duration,
 			easing: "easeOutQuad"
 		});
+
+		character.setAttribute("animation-mixer", {
+			clip: character.id === "mom" ? "walking" : "Walking",
+			loop: "repeat",
+			timeScale: 1,
+		});
+
+		setTimeout(() => {
+			character.setAttribute("animation-mixer", {
+				clip: character.id === "mom" ? "idle" : "Idle",
+				loop: "repeat",
+				timeScale: 1,
+			});
+		}, duration);
 	},
 
 	faceEachOther(charA, charB) {
