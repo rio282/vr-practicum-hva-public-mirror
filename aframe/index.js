@@ -22,12 +22,12 @@ require("@/aframe/core/components/levels/hallway.js");
 require("@/aframe/core/components/levels/bedroom.js");
 require("@/aframe/core/components/levels/kitchen.js");
 
-
 // utils
 import {DEBUG_MODE, enablePovLightingSystem} from "@/aframe/settings.js";
 import {redirectConsoleOutputForAFrame} from "@/aframe/core/utils/redirect-console-output.js";
 import {addCustomDevTools} from "@/aframe/core/utils/dev-tools.js";
 import {getFilesFromFolder, _m_context, _a_context} from "@/aframe/core/utils/path-utils.js";
+import {AmbientAudio} from "@/aframe/core/utils/audio-utils.js";
 
 // managers
 import {GameStateManager} from "@/aframe/core/managers/gamestate-manager.js";
@@ -135,6 +135,45 @@ export function Game() {
 	const manager = new GameStateManager(scene);
 	manager.start();
 
+	// --- fixes weird bug where audio won't start playing because of supposed suspended state.
+	function unlockAudioContext() {
+		if (!scene.audioListener) return;
+
+		const ctx = scene.audioListener.context;
+
+		const resumeAudio = () => {
+			if (ctx.state === "suspended") ctx.resume();
+		};
+
+		// Resume on normal user input
+		window.addEventListener("click", resumeAudio, { once: true });
+		window.addEventListener("keydown", resumeAudio, { once: true });
+		window.addEventListener("touchstart", resumeAudio, { once: true });
+
+		// Resume for VR sessions
+		scene.addEventListener("enter-vr", () => {
+			const session = scene.renderer.xr.getSession?.();
+			if (!session) return;
+
+			// Try to resume immediately
+			resumeAudio();
+
+			// Resume when XR input sources fire
+			const resumeOnInput = () => {
+				resumeAudio();
+				session.removeEventListener("select", resumeOnInput);
+				session.removeEventListener("squeeze", resumeOnInput);
+			};
+
+			session.addEventListener("select", resumeOnInput);
+			session.addEventListener("squeeze", resumeOnInput);
+		});
+	}
+
+	document.querySelector("a-scene").addEventListener("loaded", unlockAudioContext);
+
 	// NOTE: leave this at the end
-	scene.addEventListener("loaded", _ => addCustomDevTools());
+	scene.addEventListener("loaded", _ => {
+		if (DEBUG_MODE) addCustomDevTools();
+	});
 }
