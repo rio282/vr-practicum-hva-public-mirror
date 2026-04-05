@@ -27,6 +27,7 @@ require("@/aframe/core/utils/vr-hand-grab.js");
 require("@/aframe/core/components/levels/hallway.js");
 require("@/aframe/core/components/levels/bedroom.js");
 require("@/aframe/core/components/levels/kitchen.js");
+require("@/aframe/core/components/levels/forest.js");
 
 // utils
 import {DEBUG_MODE, enablePovLightingSystem} from "@/aframe/settings.js";

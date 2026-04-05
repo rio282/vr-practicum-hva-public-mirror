@@ -1,4 +1,5 @@
 import {AmbientAudio, speakText, getVoice} from "@/aframe/core/utils/audio-utils";
+import {isPlayerNearby} from "@/aframe/core/utils/player-detection";
 
 AFRAME.registerComponent("kitchen", {
 	init() {
@@ -28,8 +29,23 @@ AFRAME.registerComponent("kitchen", {
                 depth="24"
                 static-body
                 nav-mesh
-                visible="false"
-            ></a-box>
+                visible="false">
+			</a-box>
+
+			<a-box
+                position="-13.5 -3.5 -2.5"
+                width="1"
+                height="0.05"
+                depth="4"
+                class="level-trigger">
+            </a-box>
+			<a-box
+                position="9.5 -3.5 10"
+                width="1"
+                height="0.05"
+                depth="4"
+                class="level-trigger">
+            </a-box>
 
             <a-entity
                 id="mom"
@@ -64,6 +80,17 @@ AFRAME.registerComponent("kitchen", {
 
 		// start cutscene after some time
 		this.el.sceneEl.addEventListener("loaded", () => setTimeout(() => this.startCutscene(), 3000));
+	},
+
+	tick: function () {
+		this.container
+			.querySelectorAll(".level-trigger")
+			.forEach(lt => {
+				if (isPlayerNearby(lt, this.player, 1.5)) {
+					this.el.sceneEl.emit("change-level", {level: "forest"});
+					this.el.sceneEl.emit("game-completed");
+				}
+			});
 	},
 
 	startCutscene() {
@@ -172,6 +199,7 @@ AFRAME.registerComponent("kitchen", {
 
 		this.runStagesSequentially(stages).then(() => {
 			const instructionText = document.createElement("a-entity");
+			instructionText.setAttribute("id", "instruction");
 			instructionText.setAttribute("text", {
 				value: "Grab your bag and go outside",
 				align: "center",
@@ -229,10 +257,11 @@ AFRAME.registerComponent("kitchen", {
 		const posA = charA.object3D.position.clone();
 		const posB = charB.object3D.position.clone();
 		charA.object3D.lookAt(posB);
-		charB.object3D.lookAt(posA);
+		if (charB.id !== "player") charB.object3D.lookAt(posA);
 	},
 
 	remove() {
 		if (this.container) this.container.remove();
+		this.el.sceneEl.querySelector("#instruction")?.remove();
 	}
 });
