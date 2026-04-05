@@ -60,11 +60,16 @@ AFRAME.registerComponent("bedroom", {
 		];
 		patrolPositions.forEach(pos => {
 			const patrolEntity = document.createElement("a-entity");
-			patrolEntity.setAttribute("gltf-model", "#npc-einstein");
-			patrolEntity.setAttribute("position", `${pos.from.x} 0 ${pos.from.z}`);
+			patrolEntity.setAttribute("gltf-model", "#npc-spider");
+			patrolEntity.setAttribute("position", `${pos.from.x} 1 ${pos.from.z}`);
+			patrolEntity.setAttribute("animation-mixer", {
+				clip: "Armature|Walk-Cycle-Run",
+				loop: "repeat",
+				timeScale: 1
+			});
 			patrolEntity.setAttribute("patrol-entity", {
-				pointA: `${pos.from.x} 0 ${pos.from.z}`,
-				pointB: `${pos.to.x} 0 ${pos.to.z}`,
+				pointA: `${pos.from.x} 1 ${pos.from.z}`,
+				pointB: `${pos.to.x} 1 ${pos.to.z}`,
 				speed: getRandomNumber(5, 10),
 			});
 			this.container.querySelector("[entity-container]").appendChild(patrolEntity);
