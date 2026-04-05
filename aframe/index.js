@@ -16,6 +16,7 @@ require("super-hands");
 
 // components
 require("@/aframe/core/components/light-jitter.js");
+require("@/aframe/core/components/entities/patrol-entity.js");
 
 // import levels
 require("@/aframe/core/components/levels/hallway.js");

@@ -22,6 +22,7 @@ AFRAME.registerComponent("bedroom", {
 				position="0 6 0"
 			></a-entity>
 
+			<!-- safe zones -->
 			<a-box
 				data-zone-order="0"
 				position="-12.1 0.85 -2.8"
@@ -45,7 +46,29 @@ AFRAME.registerComponent("bedroom", {
 				visible="${DEBUG_MODE}"
 				class="safe-zone">
 			</a-box>
+
+			<!-- npcs -->
+			<a-entity entity-container></a-entity>
 		`;
+
+		const patrolPositions = [
+			{from: {x: 0, z: -12}, to: {x: 0, z: 20}},
+			{from: {x: -17, z: 7}, to: {x: 0, z: 7}},
+			{from: {x: 13, z: -12}, to: {x: -12, z: 21}},
+			{from: {x: -7, z: 21}, to: {x: -7, z: -12}},
+			{from: {x: 10, z: 8}, to: {x: 10, z: 22}},
+		];
+		patrolPositions.forEach(pos => {
+			const patrolEntity = document.createElement("a-entity");
+			patrolEntity.setAttribute("gltf-model", "#npc-einstein");
+			patrolEntity.setAttribute("position", `${pos.from.x} 0 ${pos.from.z}`);
+			patrolEntity.setAttribute("patrol-entity", {
+				pointA: `${pos.from.x} 0 ${pos.from.z}`,
+				pointB: `${pos.to.x} 0 ${pos.to.z}`,
+				speed: getRandomNumber(5, 10),
+			});
+			this.container.querySelector("[entity-container]").appendChild(patrolEntity);
+		});
 
 		this.el.appendChild(this.container);
 
