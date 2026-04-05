@@ -168,6 +168,7 @@ AFRAME.registerComponent("bedroom", {
 	},
 
 	remove() {
+		this.el.sceneEl.emit("update-player-light-base-values", this.defaultLight);
 		if (this.container) this.container.remove();
 	}
 });

@@ -81,3 +81,24 @@ export function playSoundOnEntity(el, itemId, options = {}) {
 	// ensure it plays immediately
 	el.addEventListener("sound-loaded", () => el.components.sound.playSound(), {once: true});
 }
+
+export function speakText(text, options = {}) {
+	const utterance = new SpeechSynthesisUtterance(text);
+
+	// optional tweaks
+	if (options.voice) utterance.voice = options.voice;
+	if (options.rate) utterance.rate = options.rate ?? 1;
+	if (options.pitch) utterance.pitch = options.pitch ?? 1;
+	if (options.volume) utterance.volume = options.volume ?? 1;
+
+	window.speechSynthesis.speak(utterance);
+
+	return new Promise(resolve => {
+		utterance.onend = resolve;
+	});
+}
+
+export function getVoice(namePart) {
+	const voices = window.speechSynthesis.getVoices();
+	return voices.find(v => v.name.includes(namePart));
+}

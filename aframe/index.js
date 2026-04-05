@@ -18,6 +18,11 @@ require("super-hands");
 require("@/aframe/core/components/light-jitter.js");
 require("@/aframe/core/components/entities/patrol-entity.js");
 
+// components pt. 2
+require("@/aframe/core/utils/mouse-drag.js");
+require("@/aframe/core/utils/vr-hand-grab.js");
+
+
 // import levels
 require("@/aframe/core/components/levels/hallway.js");
 require("@/aframe/core/components/levels/bedroom.js");
@@ -28,7 +33,6 @@ import {DEBUG_MODE, enablePovLightingSystem} from "@/aframe/settings.js";
 import {redirectConsoleOutputForAFrame} from "@/aframe/core/utils/redirect-console-output.js";
 import {addCustomDevTools} from "@/aframe/core/utils/dev-tools.js";
 import {getFilesFromFolder, _m_context, _a_context} from "@/aframe/core/utils/path-utils.js";
-import {AmbientAudio} from "@/aframe/core/utils/audio-utils.js";
 
 // managers
 import {GameStateManager} from "@/aframe/core/managers/gamestate-manager.js";
@@ -38,6 +42,7 @@ import {GameStateManager} from "@/aframe/core/managers/gamestate-manager.js";
  * @constructor
  */
 export function Game() {
+	window.vrMode = "grab";
 	if (DEBUG_MODE) redirectConsoleOutputForAFrame();
 
 	// load
@@ -88,7 +93,7 @@ export function Game() {
 								<!-- Desktop users -->
 								<a-entity
 									cursor="rayOrigin: mouse"
-									raycaster="objects: .level-trigger">
+									raycaster="objects: .grabbable, .level-trigger">
 								</a-entity>
 
 								<!-- Light Source -->
@@ -102,20 +107,28 @@ export function Game() {
 							` : ""}
 						</a-entity>
 
-						<!-- VR users -->
-						<!-- TODO: fix -->
-<!--						<a-entity-->
-<!--							id="leftHand"-->
-<!--							hand-controls="hand: left"-->
-<!--							super-hands="colliderEvent: raycaster-intersection"-->
-<!--							raycaster="objects: .grabbable"-->
-<!--						></a-entity>-->
-<!--						<a-entity-->
-<!--							id="rightHand"-->
-<!--							hand-controls="hand: right"-->
-<!--							super-hands="colliderEvent: raycaster-intersection"-->
-<!--							raycaster="objects: .grabbable"-->
-<!--						></a-entity>-->
+						<!-- VR users (some settings get overriden in vr-hand-grab.js->tick()) -->
+						<a-entity
+							id="leftHand"
+							hand-controls="hand: left"
+							super-hands="colliderEvent: raycaster-intersection"
+							oculus-touch-controls="hand: left; model: false"
+							vr-hand-grab="touchRadius: 0.24; palmY: -0.02; palmZ: -0.12"
+							raycaster="objects: .clickable; far: 4.5"
+							cursor="rayOrigin: entity; fuse: false"
+							line="color: #9ee7ff; opacity: 0.95">
+						</a-entity>
+
+						<a-entity
+							id="rightHand"
+							hand-controls="hand: right"
+							super-hands="colliderEvent: raycaster-intersection"
+							oculus-touch-controls="hand: right; model: false"
+							vr-hand-grab="touchRadius: 0.24; palmY: -0.02; palmZ: -0.12"
+							raycaster="objects: .clickable; far: 4.5"
+							cursor="rayOrigin: entity; fuse: false"
+							line="color: #9ee7ff; opacity: 0.95">
+						</a-entity>
 
 				</a-entity>
 
