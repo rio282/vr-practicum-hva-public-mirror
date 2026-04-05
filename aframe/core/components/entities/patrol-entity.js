@@ -31,9 +31,7 @@ AFRAME.registerComponent("patrol-entity", {
 		if (distance < 0.1) {
 			if (target.equals(new THREE.Vector3(this.data.pointA.x, this.data.pointA.y, this.data.pointA.z)))
 				this.target.set(this.data.pointB.x, this.data.pointB.y, this.data.pointB.z);
-			else
-				this.target.set(this.data.pointA.x, this.data.pointA.y, this.data.pointA.z);
-
+			else this.target.set(this.data.pointA.x, this.data.pointA.y, this.data.pointA.z);
 			return;
 		}
 
