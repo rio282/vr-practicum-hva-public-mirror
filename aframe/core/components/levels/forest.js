@@ -17,7 +17,7 @@ AFRAME.registerComponent("forest", {
 		this.el.appendChild(this.container);
 
 		// start forest audio
-		AmbientAudio.start("#audio-nature", 0.125);
+		AmbientAudio.start("#audio-nature", 0.2);
 
 		// tweak lights
 		this.el.sceneEl.removeAttribute("fog");
