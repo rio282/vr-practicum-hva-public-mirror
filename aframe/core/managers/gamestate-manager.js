@@ -18,7 +18,7 @@ export const LEVELS = Object.freeze({
 
 const VALID_TRANSITIONS = {
 	[STATE.INITIALIZING]: [STATE.PLAYING],
-	[STATE.PLAYING]: [STATE.IN_CUTSCENE, STATE.GAME_OVER, STATE.GAME_WON],
+	[STATE.PLAYING]: [STATE.IN_CUTSCENE, STATE.GAME_OVER, STATE.GAME_WON, STATE.FREE_ROAM],
 	[STATE.IN_CUTSCENE]: [STATE.PLAYING],
 	[STATE.GAME_OVER]: [STATE.PLAYING],
 	[STATE.GAME_WON]: [STATE.PLAYING, STATE.FREE_ROAM],
@@ -163,12 +163,10 @@ export class GameStateManager {
 
 	#onStartPlaying() {
 		console.debug("Gameplay active");
-		this.#scene.emit("enable-controls");
 	}
 
 	#onCutsceneStart() {
 		console.debug("Cutscene started");
-		this.#scene.emit("disable-controls");
 	}
 
 	#onGameOver() {

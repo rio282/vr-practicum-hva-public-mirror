@@ -79,7 +79,11 @@ AFRAME.registerComponent("kitchen", {
 		AmbientAudio.start("#audio-eerie_1", 0.125, false);
 
 		// start cutscene after some time
-		this.el.sceneEl.addEventListener("loaded", () => setTimeout(() => this.startCutscene(), 3000));
+		this.onLevelLoaded = (e) => {
+			if (e.detail.level !== "kitchen") return;
+			setTimeout(() => this.startCutscene(), 3000);
+		};
+		this.el.sceneEl.addEventListener("level-loaded", this.onLevelLoaded);
 	},
 
 	tick: function () {
@@ -95,39 +99,36 @@ AFRAME.registerComponent("kitchen", {
 
 	startCutscene() {
 		this.el.sceneEl.emit("start-cutscene");
+		this.el.sceneEl.emit("set-instruction", {value: "Remain calm."});
 
 		const mom = this.container.querySelector("#mom");
 		const dad = this.container.querySelector("#dad");
 
-		// define stages
 		const stages = [
 			async () => {
-				// stage 0: wait
 				await this.delay(1567);
 			},
 			async () => {
-				// stage 1: mom moves
 				const walkingTime = 3456;
 				this.faceEachOther(mom, dad);
+
 				this.moveCharacter(mom, {x: -9, y: -3.5, z: 9}, "walking", "idle", walkingTime);
 				this.moveCharacter(dad, {x: -7, y: -3.5, z: 9}, "Walking", "Idle", walkingTime);
+
 				await this.delay(walkingTime);
 				this.faceEachOther(mom, dad);
 			},
 			async () => {
-				// stage 2: wait a little
 				await this.delay(1000);
 			},
 			async () => {
-				// stage 3: start talking
-				// mom speaks
 				await speakText("You need to listen to me!", {
 					rate: 0.9,
 					pitch: 1.1,
 					volume: 1,
 					voice: getVoice("English")
 				});
-				// dad responds
+
 				await speakText("I can't believe this is happening!", {
 					rate: 0.95,
 					pitch: 0.67,
@@ -135,18 +136,17 @@ AFRAME.registerComponent("kitchen", {
 				});
 			},
 			async () => {
-				// stage 4: crashout
 				await speakText("You never listen! You never do!", {
 					rate: 1.05,
 					pitch: 1.1
 				});
+
 				await speakText("Don't turn this on me again!", {
 					rate: 1.0,
 					pitch: 0.6
 				});
 			},
 			async () => {
-				// stage 5: dad storms out
 				await speakText("I'm done. I'm not doing this anymore.", {
 					rate: 0.9,
 					pitch: 0.6
@@ -161,7 +161,6 @@ AFRAME.registerComponent("kitchen", {
 				);
 			},
 			async () => {
-				// stage 6: mom says its all *YOUR* fault
 				this.faceEachOther(mom, this.player);
 
 				await speakText("This is your fault.", {
@@ -181,7 +180,6 @@ AFRAME.registerComponent("kitchen", {
 				});
 			},
 			async () => {
-				// stage 7: mom walks out
 				await this.moveCharacter(
 					mom,
 					{x: -15, y: -3.5, z: 20},
@@ -191,29 +189,13 @@ AFRAME.registerComponent("kitchen", {
 				);
 			},
 			async () => {
-				// stage 8: player takes control again, we grab our bag and leave
 				await this.delay(1500);
 				AmbientAudio.setVolume(AmbientAudio.getVolume() / 2);
-			},
+				this.el.sceneEl.emit("set-instruction", {value: "Grab your bag and go outside"});
+			}
 		];
 
-		this.runStagesSequentially(stages).then(() => {
-			const instructionText = document.createElement("a-entity");
-			instructionText.setAttribute("id", "instruction");
-			instructionText.setAttribute("text", {
-				value: "Grab your bag and go outside",
-				align: "center",
-				width: 2.5,
-				color: "#FFFFFF"
-			});
-			instructionText.setAttribute("position", "0 -0.2 -1");
-			instructionText.setAttribute("visible", true);
-
-			const camera = this.el.sceneEl.querySelector("[camera]");
-			camera.appendChild(instructionText);
-
-			this.el.sceneEl.emit("end-cutscene");
-		});
+		this.runStagesSequentially(stages).then(() => this.el.sceneEl.emit("end-cutscene"));
 	},
 
 	async moveCharacter(character, target, walkClip, idleClip, duration = 3000) {
@@ -262,6 +244,6 @@ AFRAME.registerComponent("kitchen", {
 
 	remove() {
 		if (this.container) this.container.remove();
-		this.el.sceneEl.querySelector("#instruction")?.remove();
+		this.el.sceneEl.emit("clear-instruction");
 	}
 });

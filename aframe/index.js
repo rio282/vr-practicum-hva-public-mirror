@@ -21,6 +21,7 @@ require("@/aframe/core/components/entities/patrol-entity.js");
 // components pt. 2
 require("@/aframe/core/utils/mouse-drag.js");
 require("@/aframe/core/utils/vr-hand-grab.js");
+require("@/aframe/core/utils/ui-instruction.js");
 
 // import levels
 require("@/aframe/core/components/levels/hallway.js");
@@ -88,6 +89,7 @@ export function Game() {
 						<a-entity
 							camera
 							id="camera"
+							ui-instruction
 							look-controls
 							position="0 1.6 0">
 								<!-- Desktop users -->
