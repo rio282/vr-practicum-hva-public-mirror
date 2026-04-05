@@ -1,0 +1,1 @@
+export const DEBUG_MODE=!0;export const keymap={help:"h",toggleStats:"p",toggleNavMeshOverlay:"n"};export const enablePovLightingSystem=!0;
