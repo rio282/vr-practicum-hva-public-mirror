@@ -12,9 +12,19 @@ AFRAME.registerComponent("kitchen", {
                 position="0 -3.5 0"
             ></a-entity>
 
-            <!-- Characters -->
-            <a-entity id="char-left" gltf-model="#mom" position="-1 0 0"></a-entity>
-            <a-entity id="char-right" gltf-model="#dad" position="1 0 0"></a-entity>
+            <a-entity
+                id="mom"
+                gltf-model="#npc-mom"
+                position="-12 -3.5 -3"
+                scale="3 3 3">
+            </a-entity>
+
+            <a-entity
+                id="dad"
+                gltf-model="#npc-dad"
+                position="9 -3.5 10"
+                scale="3 3 3">
+            </a-entity>
         `;
 
 		this.el.appendChild(this.container);
@@ -22,35 +32,51 @@ AFRAME.registerComponent("kitchen", {
 		// start eerie audio
 		AmbientAudio.start("#audio-eerie_1", 0.125, false);
 
-		// start cutscene after 1 second
-		setTimeout(() => this.startCutscene(), 1000);
+		// start cutscene after some time
+		this.el.sceneEl.addEventListener("loaded", () => setTimeout(() => this.startCutscene(), 3000));
 	},
 
 	startCutscene() {
 		// emit game cutscene state
 		this.el.sceneEl.emit("start-cutscene");
 
-		// move both characters to the middle
-		const middlePosition = {x: 0, y: 0, z: 0};
+		const mom = this.container.querySelector("#mom");
+		const dad = this.container.querySelector("#dad");
 
-		this.container.querySelector("#char-left").setAttribute("animation", {
+		// define start & end positions
+		const momTarget = {x: -9, y: -3.5, z: 9};
+		const dadTarget = {x: -7, y: -3.5, z: 9};
+
+		// move characters
+		this.moveCharacter(mom, momTarget);
+		this.moveCharacter(dad, dadTarget);
+
+		// rotate characters to face each other after arriving
+		setTimeout(() => this.faceEachOther(mom, dad), 1500);
+
+		// end cutscene after 4 seconds
+		setTimeout(() => this.el.sceneEl.emit("end-cutscene"), 5000);
+	},
+
+	moveCharacter(character, target) {
+		// try pathfinding here (pseudo)
+		// TODO: using three js?
+
+		// if pathfinding unavailable, fallback to animation
+		character.setAttribute("animation", {
 			property: "position",
-			to: `${middlePosition.x - 1} ${middlePosition.y} ${middlePosition.z}`,
-			dur: 2000,
-			easing: "easeInOutQuad"
+			to: `${target.x} ${target.y} ${target.z}`,
+			dur: 3456,
+			easing: "easeOutQuad"
 		});
+	},
 
-		this.container.querySelector("#char-right").setAttribute("animation", {
-			property: "position",
-			to: `${middlePosition.x + 1} ${middlePosition.y} ${middlePosition.z}`,
-			dur: 2000,
-			easing: "easeInOutQuad"
-		});
+	faceEachOther(charA, charB) {
+		const posA = charA.object3D.position.clone();
+		const posB = charB.object3D.position.clone();
 
-		// optional: end cutscene automatically after 3 seconds
-		setTimeout(() => {
-			this.el.sceneEl.emit("end-cutscene");
-		}, 3000);
+		charA.object3D.lookAt(posB);
+		charB.object3D.lookAt(posA);
 	},
 
 	remove() {
