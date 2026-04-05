@@ -8,6 +8,8 @@ AFRAME.registerComponent("bedroom", {
 	audioRelaxFactor: 0.2,  // lower is better
 	lightRelaxFactor: 1.1,  // higher is better
 
+	guideLineColor: "#00EE00",
+
 	init() {
 		// environment setup
 		this.player = this.el.sceneEl.querySelector("#player");
@@ -84,15 +86,24 @@ AFRAME.registerComponent("bedroom", {
 				pointB: `${pos.to.x} 1 ${pos.to.z}`,
 				speed: getRandomNumber(5, 10),
 			});
-			// this.container.querySelector("[entity-container]").appendChild(patrolEntity);
+			this.container.querySelector("[entity-container]").appendChild(patrolEntity);
 		});
 
 		this.el.appendChild(this.container);
 
+		this.safeZoneLine = document.createElement("a-entity");
+		this.safeZoneLine.setAttribute("line", {
+			start: "0 0 0",
+			end: "0 0 0",
+			color: this.guideLineColor,
+			opacity: 0.5
+		});
+		this.el.appendChild(this.safeZoneLine);
+
 		AmbientAudio.start(`#audio-parent_arguing_${getRandomNumber(1, 3)}`, this.defaultAudioVolume);
 
 		// vars
-		this.lastSafeZone = null;
+		this.lastSafeZone = this.container.querySelector(`[data-zone-order="0"]`);
 
 		// set tick rate
 		this.tick = AFRAME.utils.throttleTick(this.tick, 1 / 20 * 1000, this);
@@ -102,8 +113,11 @@ AFRAME.registerComponent("bedroom", {
 		let wasInSafeZone = this.isInSafeZone;
 		let isInSafeZone = false;
 
+		const safeZones = Array.from(this.container.querySelectorAll(".safe-zone"))
+			.sort((a, b) => a.dataset.zoneOrder - b.dataset.zoneOrder);
+
 		// check safe zone stuff
-		this.container.querySelectorAll(".safe-zone").forEach(sz => {
+		safeZones.forEach(sz => {
 			if (isPlayerInBounds(sz, this.player)) {
 				this.lastSafeZone = sz;
 				isInSafeZone = true;
@@ -117,6 +131,17 @@ AFRAME.registerComponent("bedroom", {
 			if (isInSafeZone) this.onEnterSafeZone();
 			else this.onExitSafeZone();
 		}
+
+		// draw line to next safe zone
+		const next = safeZones.find(z => parseInt(z.dataset.zoneOrder) > (this.lastSafeZone?.dataset.zoneOrder || -1)) || false;
+		if (next) {
+			this.safeZoneLine.setAttribute("line", {
+				start: `${this.player.object3D.position.x} 1 ${this.player.object3D.position.z}`,
+				end: `${next.object3D.position.x} 1 ${next.object3D.position.z}`,
+				color: this.guideLineColor,
+				opacity: 0.5
+			});
+		} else this.el.sceneEl.emit("game-won");
 
 		// check entity stuff
 		this.container.querySelectorAll("[patrol-entity]").forEach(pe => {
