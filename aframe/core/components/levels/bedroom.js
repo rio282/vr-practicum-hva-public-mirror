@@ -1,5 +1,5 @@
-import {AmbientAudio} from "@/aframe/core/utils/audio-utils";
 import {getRandomNumber} from "@/js/utils/number";
+import {AmbientAudio} from "@/aframe/core/utils/audio-utils";
 
 AFRAME.registerComponent("bedroom", {
 	init() {
