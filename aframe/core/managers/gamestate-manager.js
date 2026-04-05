@@ -5,7 +5,8 @@ export const STATE = Object.freeze({
 	PLAYING: "playing",
 	IN_CUTSCENE: "in-cutscene",
 	GAME_OVER: "game-over",
-	GAME_WON: "game-completed",
+	GAME_WON: "game-won",
+	FREE_ROAM: "game-completed",
 });
 
 export const LEVELS = Object.freeze({
@@ -20,7 +21,8 @@ const VALID_TRANSITIONS = {
 	[STATE.PLAYING]: [STATE.IN_CUTSCENE, STATE.GAME_OVER, STATE.GAME_WON],
 	[STATE.IN_CUTSCENE]: [STATE.PLAYING],
 	[STATE.GAME_OVER]: [STATE.PLAYING],
-	[STATE.GAME_WON]: [],
+	[STATE.GAME_WON]: [STATE.PLAYING, STATE.FREE_ROAM],
+	[STATE.FREE_ROAM]: [],
 };
 
 export class GameStateManager {
@@ -33,11 +35,13 @@ export class GameStateManager {
 		this.#scene = scene;
 		this.#currentLevel = startingLevel;
 
+		// TODO: oh god yeah, im so consistent
 		this.#scene.addEventListener("change-level", (e) => this.changeLevel(e.detail.level));
 		this.#scene.addEventListener("game-over", () => this.setState(STATE.GAME_OVER));
 		this.#scene.addEventListener("game-won", () => this.setState(STATE.GAME_WON));
 		this.#scene.addEventListener("start-cutscene", () => this.setState(STATE.IN_CUTSCENE));
 		this.#scene.addEventListener("end-cutscene", () => this.setState(STATE.PLAYING));
+		this.#scene.addEventListener("enter-free-roam", () => this.setState(STATE.FREE_ROAM));
 	}
 
 	async start() {
@@ -103,6 +107,10 @@ export class GameStateManager {
 			case STATE.GAME_WON:
 				this.#onGameWon();
 				break;
+
+			case STATE.FREE_ROAM:
+				this.#onGameCompletion();
+				break;
 		}
 	}
 
@@ -126,6 +134,10 @@ export class GameStateManager {
 			case LEVELS.BEDROOM:
 				playerStartingPosition.x = -10;
 				playerStartingPosition.z = -7;
+				break;
+			case LEVELS.KITCHEN:
+				playerStartingPosition.x = -1.4;
+				playerStartingPosition.z = -4.5;
 				break;
 			default:
 				break;
@@ -168,9 +180,12 @@ export class GameStateManager {
 	}
 
 	#onGameWon() {
-		console.debug("Game completed");
+		console.debug("Game won");
+		this.changeLevel(LEVELS.HALLWAY).then(() => this.setState(STATE.PLAYING));
+	}
 
-		this.#scene.emit("disable-controls");
-		this.#scene.emit("show-victory");
+	#onGameCompletion() {
+		console.debug("Game completed");
+		this.changeLevel(LEVELS.THE_OUTSIDE).then(() => this.setState(STATE.FREE_ROAM));
 	}
 }
