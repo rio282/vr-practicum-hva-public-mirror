@@ -72,7 +72,7 @@ AFRAME.registerComponent("kitchen", {
 			<a-entity
                 id="bag"
                 gltf-model="#item-bag"
-                position="-6.7 0.5 -7"
+                position="-6.7 0.5 -6"
                 scale="0.2 0.2 0.2"
                 dynamic-body="shape: box;"
                 mouse-drag
