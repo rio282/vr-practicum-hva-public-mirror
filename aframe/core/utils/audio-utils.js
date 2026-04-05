@@ -2,7 +2,7 @@ export class AmbientAudio {
 
 	static #ambienceEl;
 
-	static start(soundId, volume = 0.15) {
+	static start(soundId, volume = 0.15, loop = true) {
 		if (this.#ambienceEl) return;
 
 		this.#ambienceEl = document.createElement("a-entity");
@@ -10,7 +10,7 @@ export class AmbientAudio {
 		this.#ambienceEl.setAttribute("sound", {
 			src: soundId,
 			autoplay: true,
-			loop: true,
+			loop: loop,
 			positional: false,
 			volume
 		});

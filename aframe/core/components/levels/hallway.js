@@ -1,6 +1,6 @@
 import {isPlayerNearby} from "@/aframe/core/utils/player-detection.js";
-import swipe from "bootstrap/js/src/util/swipe";
-import {LEVELS} from "../../managers/gamestate-manager";
+import {LEVELS} from "@/aframe/core/managers/gamestate-manager";
+import {AmbientAudio} from "@/aframe/core/utils/audio-utils";
 
 AFRAME.registerComponent("hallway", {
 	init() {
@@ -74,5 +74,6 @@ AFRAME.registerComponent("hallway", {
 			if (trigger) trigger.removeEventListener("click", this.onChangeLevel);
 			this.container.remove();
 		}
+		AmbientAudio.stop();
 	}
 });
