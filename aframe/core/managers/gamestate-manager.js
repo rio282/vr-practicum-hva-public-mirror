@@ -1,3 +1,5 @@
+import {AmbientAudio} from "@/aframe/core/utils/audio-utils";
+
 export const STATE = Object.freeze({
 	INITIALIZING: "initializing",
 	PLAYING: "playing",
@@ -57,6 +59,7 @@ export class GameStateManager {
 
 	async changeLevel(newLevel, playerStartingPosition = {x: 0, y: 0, z: 0}) {
 		if (newLevel === this.#currentLevel) return;
+		AmbientAudio.stop();
 		await this.loadLevel(newLevel, playerStartingPosition);
 	}
 

@@ -29,7 +29,6 @@ AFRAME.registerComponent("bedroom", {
 	},
 
 	remove() {
-		AmbientAudio.stop();
 		if (this.container) this.container.remove();
 	}
 });

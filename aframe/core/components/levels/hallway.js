@@ -38,6 +38,8 @@ AFRAME.registerComponent("hallway", {
 
 		this.el.appendChild(this.container);
 
+		AmbientAudio.start("#audio-doors_lobby_music", 0.33);
+
 		// set tick rate
 		this.tick = AFRAME.utils.throttleTick(this.tick, 1 / 20 * 1000, this);
 	},
@@ -74,6 +76,5 @@ AFRAME.registerComponent("hallway", {
 			if (trigger) trigger.removeEventListener("click", this.onChangeLevel);
 			this.container.remove();
 		}
-		AmbientAudio.stop();
 	}
 });

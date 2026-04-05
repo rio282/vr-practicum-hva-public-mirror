@@ -1,3 +1,5 @@
+import {AmbientAudio} from "@/aframe/core/utils/audio-utils";
+
 AFRAME.registerComponent("kitchen", {
 	init() {
 		this.container = document.createElement("a-entity");
@@ -10,7 +12,9 @@ AFRAME.registerComponent("kitchen", {
 			></a-entity>
 		`;
 
-		this.el.appendChild(this.container);
+		this.el.appendChild(this.container)
+
+		AmbientAudio.start("#audio-eerie_1", 0.125, false);
 	},
 
 	remove() {
