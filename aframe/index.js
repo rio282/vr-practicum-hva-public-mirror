@@ -22,7 +22,6 @@ require("@/aframe/core/components/entities/patrol-entity.js");
 require("@/aframe/core/utils/mouse-drag.js");
 require("@/aframe/core/utils/vr-hand-grab.js");
 
-
 // import levels
 require("@/aframe/core/components/levels/hallway.js");
 require("@/aframe/core/components/levels/bedroom.js");
@@ -150,13 +149,10 @@ export function Game() {
 	const manager = new GameStateManager(scene);
 	manager.start();
 
-	scene.addEventListener("start-cutscene", () => {
-		// TODO: remove user input
-	});
-
-	scene.addEventListener("end-cutscene", () => {
-		// TODO: re-add user input
-	});
+	// honestly, whatever dawg.
+	// const player = scene.querySelector("#player");
+	// scene.addEventListener("start-cutscene", () => disableControls(player));
+	// scene.addEventListener("end-cutscene", () => enableControls(player));
 
 	// --- fixes weird bug where audio won't start playing because of supposed suspended state.
 	function unlockAudioContext() {

@@ -41,7 +41,7 @@ export class GameStateManager {
 		this.#scene.addEventListener("game-won", () => this.setState(STATE.GAME_WON));
 		this.#scene.addEventListener("start-cutscene", () => this.setState(STATE.IN_CUTSCENE));
 		this.#scene.addEventListener("end-cutscene", () => this.setState(STATE.PLAYING));
-		this.#scene.addEventListener("enter-free-roam", () => this.setState(STATE.FREE_ROAM));
+		this.#scene.addEventListener("game-completed", () => this.setState(STATE.FREE_ROAM));
 	}
 
 	async start() {
